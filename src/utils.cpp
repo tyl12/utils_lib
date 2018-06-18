@@ -19,11 +19,72 @@
 //#include <boost/bind.hpp>
 //#include <boost/function.hpp>
 
+#include "utils.h"
+
 using namespace std;
 
 namespace utils{
 
 static bool gDebug=false;
+
+
+
+int wait_for_network_block(){
+    while(true){
+        string cmd1 = "ping -q -c 1 -W 1 www.baidu.com >/dev/null";
+        int ret1 = system(cmd1.c_str());
+        string cmd2 = "ping -q -c 1 -W 1 www.xinhuanet.com >/dev/null";
+        int ret2 = system(cmd2.c_str());
+
+        if (ret1 == 0 || ret2 == 1){
+            cout<<__FUNCTION__<<" ping success"<<endl;
+            return 0;
+        }
+        cout<<__FUNCTION__<<" ping failed, retry"<<endl;
+        usleep(5*1000*1000);
+    }
+    return -1;
+}
+
+bool comparemd5_withcmd(string& cmd, const string& md5)
+{
+    cout<<__FUNCTION__<<endl;
+    vector<string> output;
+    int ret = launch_cmd(cmd.c_str(), output);
+    string md5_of_file = output[0];
+    if (strcmp(md5_of_file.c_str(), md5.c_str()) == 0){
+        cout<<"check md5 success for cmd: " << cmd <<endl;
+        return true;
+    }
+    cout<<"check md5 fail for cmd: " << cmd<<endl;
+    cout<<"expected:"<<md5<<endl;
+    cout<<"real:"<<md5_of_file<<endl;
+    return false;
+}
+
+bool comparemd5(const char* file, const string& md5, bool withroot = false)
+{
+    cout<<__FUNCTION__<<endl;
+
+    string cmd = string("md5sum ") + file + " | awk '{print $1}' ";
+    if (withroot)
+        cmd = string("sudo  ") + cmd;
+
+    vector<string> output;
+    int ret = launch_cmd(cmd.c_str(), output);
+    string md5_of_file = output[0];
+
+    if (strcmp(md5_of_file.c_str(), md5.c_str()) == 0){
+        cout<<"check md5 success for file: " << file<<endl;
+        return true;
+    }
+    cout<<"check md5 fail for file: " << file<<endl;
+    cout<<"expected:"<<md5<<endl;
+    cout<<"real:"<<md5_of_file<<endl;
+    return false;
+}
+
+
 
 string& trim(string &s)
 {
@@ -127,9 +188,10 @@ bool isDebugEnv(){
 #include <string.h>
 #include <shadow.h>
 #include <unistd.h>
+#include <pwd.h>
 
 static const char user_passwd[]="invalid_passwd";
-int check_passwd(const char* name = NULL){
+int check_passwd(const char* name ){
     const char *username = NULL;
     if (name == NULL || strcmp(name, "") == 0)
         username = getlogin();
@@ -154,6 +216,47 @@ int check_passwd(const char* name = NULL){
     }
 }
 
+string getLoginUser(){
+#if 0
+    char *name;
+    name = getlogin();
+    if (!name){
+        cout<<"getlogin() error"<<endl;
+        name="";
+    }
+    else
+        cout<<"This is the login info: "<<name<<endl;;
+    return name;
+#else
+    struct passwd *pwd = getpwuid(getuid());
+    if (pwd){
+        cout<<"getpwuid() return: " << pwd->pw_name<<endl;
+        return pwd->pw_name;
+    }
+    return "";
+#endif
+}
+
+int64_t get_time_ms()
+{
+    using namespace std::chrono;
+    auto now = system_clock::now();
+    auto now_millis = time_point_cast<milliseconds>(now);
+    auto value = now_millis.time_since_epoch();
+
+    return value.count();
+}
+
+std::string get_date_sec()
+{
+    using namespace std::chrono;
+    char tp[64] = { '\0' };
+    auto now = system_clock::now();
+    std::time_t t = system_clock::to_time_t(now);
+    std::tm tm = *std::localtime(&t);
+    strftime(tp, 64, "%Y_%m_%d_%H_%M_%S", &tm);
+    return std::string(tp);
+}
 
 const int stdoutfd(dup(fileno(stdout)));
 const int stderrfd(dup(fileno(stdout)));
@@ -176,4 +279,5 @@ int restore_stdout(){
     //close(stderrfd);
     return 0;
 }
+
 }

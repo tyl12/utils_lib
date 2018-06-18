@@ -35,6 +35,10 @@ vector<string> get_current_mac_addrs();
 bool isDebugEnv();
 
 int check_passwd(const char* name = NULL);
+string getLoginUser();
+
+int64_t get_time_ms();
+string get_date_sec();
 
 int redirect_stdout_stderr(const char* fname);
 int restore_stdout();
