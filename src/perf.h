@@ -21,8 +21,8 @@ public:
     {
         over = false;
         sTag = tag;
-        start = get_time();
-        LOG_I("PERF-%s: start", sTag.c_str());
+        start = get_time_ms();
+        printf("PERF-%s: start\n", sTag.c_str());
     }
 
     virtual ~perf()
@@ -35,22 +35,22 @@ public:
 
     void reset()
     {
-        start = get_time();
+        start = get_time_ms();
         over = false;
-        LOG_I("PERF-%s: restart", sTag.c_str());
+        printf("PERF-%s: restart\n", sTag.c_str());
     }
 
     void done()
     {
         if (!over)
         {
-            auto end = get_time();
-            LOG_I("PERF-%s: done, cost %.2f sec", sTag.c_str(), (end - start) / 1000.0);
+            auto end = get_time_ms();
+            printf("PERF-%s: done, cost %.2f sec\n", sTag.c_str(), (end - start) / 1000.0);
             over = true;
         }
         else
         {
-            LOG_I("PERF-%s: already done", sTag.c_str());
+            printf("PERF-%s: already done\n", sTag.c_str());
         }
     }
 };

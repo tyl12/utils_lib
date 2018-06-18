@@ -1,3 +1,6 @@
+#ifndef UTILS_H
+#define UTILS_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
@@ -44,3 +47,4 @@ int redirect_stdout_stderr(const char* fname);
 int restore_stdout();
 
 }
+#endif

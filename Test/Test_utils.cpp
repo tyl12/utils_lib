@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "UtilSingleton.h"
-#include "Perf.h"
+#include "perf.h"
 #include <gtest/gtest.h>
 
 using namespace utils;
@@ -98,12 +98,12 @@ TEST(Test_UtilSingleton, Singletone) {
     UtilSingleton<MyClass>::DesInstance();
 }
 
-TEST(Test_Perf, Perf) {
-    Perf p("perfname");
+TEST(Test_perf, Perf) {
+    perf p("perfname");
     this_thread::sleep_for(std::chrono::seconds(2));
     p.done();
 
-    Perf m("perfSelfDestroy");
+    perf m("perfSelfDestroy");
     this_thread::sleep_for(std::chrono::seconds(2));
 }
 
