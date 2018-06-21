@@ -6,7 +6,8 @@ set (CMAKE_CXX_STANDARD 11)
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS}  ../build/install)
 link_directories(../build/install)
-link_libraries( ${GTEST_LIBRARIES} crypt pthread utils )
+#boost_system, boost_thread for circ_buf.h
+link_libraries( ${GTEST_LIBRARIES} crypt pthread utils  boost_system  boost_thread)
 
 # Link runTests with what we want to test and the GTest and pthread library
 

@@ -16,6 +16,11 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+
+#include <sys/time.h>
+#include <math.h>
+#include <time.h>
+
 //#include <boost/ref.hpp>
 //#include <boost/asio.hpp>
 //#include <boost/bind.hpp>
@@ -24,6 +29,13 @@
 using namespace std;
 
 namespace utils{
+
+#define LOGD(fmt, ...)  do{ printf("%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
+#define LOGE(fmt, ...)  do{ printf("%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
+
+//#define LOGD(fmt, ...)  do{ printf("DEBUG: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
+//#define LOGE(fmt, ...)  do{ printf("ERROR: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
+
 /*
  * 删除字符串头尾的空格字符,
  * input: inplace 操作，会改变输入字符串,
@@ -40,6 +52,8 @@ bool isDebugEnv();
 int check_passwd(const char* name = NULL);
 string getLoginUser();
 
+string get_ts(void);
+
 int64_t get_time_ms();
 string get_date_sec();
 
@@ -48,3 +62,6 @@ int restore_stdout();
 
 }
 #endif
+
+
+

@@ -85,7 +85,6 @@ bool comparemd5(const char* file, const string& md5, bool withroot = false)
 }
 
 
-
 string& trim(string &s)
 {
     if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
@@ -256,6 +255,39 @@ std::string get_date_sec()
     std::tm tm = *std::localtime(&t);
     strftime(tp, 64, "%Y_%m_%d_%H_%M_%S", &tm);
     return std::string(tp);
+}
+
+std::string get_ts(void) {
+    /*
+    char buffsec[32];
+    struct tm *sTm;
+    time_t now = time (0);
+    //sTm = gmtime (&now);
+    sTm = localtime (&now);
+    strftime (buff, sizeof(buff), "%Y-%m-%d %H:%M:%S.00:", sTm);
+    //printf ("%s %s\n", buff, "Event occurred now");
+    return buff;
+    */
+
+    char buffsec[32];
+    char buffms[32];
+    int millisec;
+    struct tm* tm_info;
+    struct timeval tv;
+
+    gettimeofday(&tv, NULL);
+
+    millisec = lrint(tv.tv_usec/1000.0); // Round to nearest millisec
+    if (millisec>=1000) { // Allow for rounding up to nearest second
+        millisec -=1000;
+        tv.tv_sec++;
+    }
+
+    tm_info = localtime(&tv.tv_sec);
+
+    strftime(buffsec, sizeof(buffsec), "%Y:%m:%d %H:%M:%S", tm_info);
+    sprintf(buffms, "%s.%03d", buffsec, millisec);
+    return buffms;
 }
 
 const int stdoutfd(dup(fileno(stdout)));

@@ -28,3 +28,6 @@ install(TARGETS ${PROJECT_NAME} DESTINATION install/)
 # Install library headers
 file(GLOB HEADERS src/*.h)
 install(FILES ${HEADERS} DESTINATION install/)
+install(DIRECTORY src/rapidjson DESTINATION install/)
+
+

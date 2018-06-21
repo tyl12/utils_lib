@@ -4,7 +4,7 @@
 #include <gtest/gtest.h>
 
 using namespace utils;
-
+#if 1
 TEST(Test_launch_cmd, ShellCmd) {
     vector<string> output;
     ASSERT_EQ(0, launch_cmd("echo test", output));
@@ -45,7 +45,9 @@ TEST(Test_get_current_mac_addrs, ShellCmd) {
     for (auto&& s:macs)
         cout<<s<<endl;
 }
+#endif
 
+#if 1
 TEST(Test_split_by_delim, SplitString) {
     vector<string> strs = split_by_delim(":abc::efg:1234 5 ::6", ':');
     for(auto&& s: strs){
@@ -71,24 +73,27 @@ TEST(Test_std, StdExample) {
     string p=s.substr(s.find_first_not_of(":$!#"));
     ASSERT_EQ("abc", p);
 }
+#endif
 
-class MyClass {
-public:
-    MyClass(const string& strData) : m_strData(strData) {
-        cout << m_strData.data() << endl;
-    };
-    ~MyClass() {
-        cout << "destory" << endl;
-    };
-    string getName(){
-        return m_strData;
-    }
-
-private:
-    string m_strData;
-};
-
+#if 1
 TEST(Test_UtilSingleton, Singletone) {
+    class MyClass {
+        public:
+            MyClass(const string& strData) : m_strData(strData) {
+                cout << m_strData.data() << endl;
+            };
+            ~MyClass() {
+                cout << "destory" << endl;
+            };
+            string getName(){
+                return m_strData;
+            }
+
+        private:
+            string m_strData;
+    };
+
+
     const string name = "create";
     auto pClass = UtilSingleton<MyClass>::GetInstance(name);
     auto pClass2 = UtilSingleton<MyClass>::GetInstance("create_test");
@@ -106,6 +111,36 @@ TEST(Test_perf, Perf) {
     perf m("perfSelfDestroy");
     this_thread::sleep_for(std::chrono::seconds(2));
 }
+#endif
+
+#if 1
+#include <queue>
+#include <vector>
+#include <iostream>
+#include "circ_buffer.h"
+
+TEST(Test_circ_buffer, CircBuffer){
+    int b = 0;
+    circ_buffer<int> buf;
+    buf.set_capacity(3);
+    buf.send(1);
+    buf.send(2);
+    buf.send(3);
+    buf.send(4);
+    buf.send(5);
+    buf.send(6);
+    int s = buf.receive();
+    ASSERT_EQ(s, 4);
+    s = buf.receive();
+    ASSERT_EQ(s, 5);
+    s = buf.receive();
+    ASSERT_EQ(s, 6);
+
+    buf.send(9);
+    s = buf.receive();
+    ASSERT_EQ(s, 9);
+}
+#endif
 
 int main(int argc, char **argv) {
     testing::InitGoogleTest(&argc, argv);
