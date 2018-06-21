@@ -1,0 +1,117 @@
+{
+    "comments":{
+        "ignore":"***** once ignore set, the entry only works for demo, will be ignored when parse *****",
+        "desc":"***** this entry is used for comments *****",
+        "usage":"capture/stream/monitor",
+        "pos":"-1",
+        "pci-id":"***** used for usb position *****",
+        "track-id":"***** used by algorithm *****",
+        "v4l2-config":{
+            "brightness":"<intvalue>",
+            "contrast":"<intvalue>",
+            "saturation":"<intvalue>",
+            "hue":"<intvalue>",
+            "white_balance_temperature_auto":"<intvalue>0/1",
+            "white_balance_temperature":"<intvalue>",
+            "gamma":"<intvalue>",
+            "gain":"<intvalue>",
+            "sharpness":"<intvalue>",
+            "backlight_compensation":"<intvalue>",
+            "exposure_auto":"<intvalue> 0, V4L2_EXPOSURE_AUTO. Automatic exposure time, automatic iris aperture. 1, V4L2_EXPOSURE_MANUAL. Manual exposure time, manual iris. 2, V4L2_EXPOSURE_SHUTTER_PRIORITY. Manual exposure time, auto iris. 3, V4L2_EXPOSURE_APERTURE_PRIORITY. Auto exposure time, manual iris.",
+            "exposure_auto_priority":"<intvalue> 0/1, When V4L2_CID_EXPOSURE_AUTO is set to AUTO or APERTURE_PRIORITY, this control determines if the device may dynamically vary the frame rate. By default this feature is disabled (0) and the frame rate must remain constant.",
+            "exposure_absolute":"<intvalue>"
+        },
+        "frame-skip":"<intvalue>,frames to skip after open camera",
+        "frame-rate":"<intvalue>,fps",
+        "crop":[20, 20, 416, 416],
+        "rotate":0,
+        "format":"jpeg",
+        "training":"<intvalue>0/1",
+        "cmd-latency":"<intvalue, in unit milli-second>",
+        "open-latency":"<intvalue, in unit milli-second>"
+    },
+    "default":{
+        "usage":"capture",
+        "pos":"-1",
+        "track-id":"-1",
+        "v4l2-config":{
+            "brightness":40,
+            "contrast":50,
+            "saturation":0,
+            "hue":6,
+            "white_balance_temperature_auto":0,
+            "gamma":200,
+            "sharpness":2,
+            "backlight_compensation":1,
+            "exposure_auto":1,
+            "exposure_auto_priority":0,
+            "exposure_absolute":30
+        },
+        "frame-skip":10,
+        "frame-rate":10,
+        "rotate":0,
+        "format":"jpeg",
+        "training":0,
+        "cmd-latency":200,
+        "open-latency":500,
+        "width":1280,
+        "height":720,
+        "desc":"put default config in this entry, will be override by below entries if specified"
+    },
+    "override":[
+    {
+        "pci-id":"1-3",
+        "track-id":"0",
+        "usage":"capture",
+        "pos":"0-0",
+        "v4l2-config":{
+            "brightness":50
+        },
+        "rotate": 0,
+        "format":"jpeg",
+        "width":1280,
+        "height":720
+    },
+
+
+    {
+        "pci-id":"1-2",
+        "track-id":"0",
+        "usage":"capture",
+        "pos":"0-1",
+        "v4l2-config":{
+            "brightness":50
+        },
+        "rotate": 0,
+        "format":"jpeg",
+        "width":1280,
+        "height":720
+    },
+    {
+        "pci-id":"1-4",
+        "track-id":"0",
+        "usage":"capture",
+        "pos":"1-1",
+        "v4l2-config":{
+            "brightness":50
+        },
+        "rotate": 0,
+        "format":"jpeg",
+        "width":1280,
+        "height":720
+    },
+    {
+        "pci-id":"1-5",
+        "track-id":"0",
+        "usage":"capture",
+        "pos":"1-0",
+        "v4l2-config":{
+            "brightness":50
+        },
+        "rotate": 0,
+        "format":"jpeg",
+        "width":1280,
+        "height":720
+    }
+    ]
+}
