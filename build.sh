@@ -17,3 +17,4 @@ cmake ..
 make
 ./runTests
 )
+
