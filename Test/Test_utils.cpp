@@ -225,6 +225,17 @@ TEST(Test_STLAlgo, Algo)
         cout<<endl;
     }
 
+    //sort
+    {
+        cout<<"sort"<<endl;
+        vector<int> vi={1,2,3,4,5,6,7};
+        reverse(vi.begin(), vi.end());
+        sort(vi.begin(), vi.end());
+        sort(vi.begin(), vi.end(), [](int& i, int& j){return i<j;});
+        for_each(vi.begin(), vi.end(), [](int& v){ cout<<' '<<v;});
+        cout<<endl;
+    }
+
     //swap
     {
         cout<<"swap"<<endl;
@@ -257,6 +268,114 @@ TEST(Test_STLAlgo, Algo)
         ASSERT_EQ(equal(vi.begin(), vi.begin()+5, vj.begin()), true);
     }
 
+    //copy_backward
+    {
+        cout<<"copy_backward"<<endl;
+        std::vector<int> myvector;
+
+        // set some values:
+        for (int i=1; i<=5; i++)
+            myvector.push_back(i*10);          // myvector: 10 20 30 40 50
+
+        myvector.resize(myvector.size()+3);  // allocate space for 3 more elements
+
+        std::copy_backward ( myvector.begin(), myvector.begin()+5, myvector.end() );
+
+        std::cout << "myvector contains:";
+        for (std::vector<int>::iterator it=myvector.begin(); it!=myvector.end(); ++it)
+            std::cout << ' ' << *it;
+        std::cout << '\n';
+    }
+    //back_inserter
+    {
+        std::vector<int> foo,bar;
+        for (int i=1; i<=5; i++)
+        { foo.push_back(i); bar.push_back(i*10); }
+
+        std::copy (bar.begin(),bar.end(),back_inserter(foo));
+
+        std::cout << "foo contains:";
+        for ( std::vector<int>::iterator it = foo.begin(); it!= foo.end(); ++it )
+            std::cout << ' ' << *it;
+        std::cout << '\n';
+    }
+    //front_inserter
+    {
+        std::deque<int> foo,bar;
+        for (int i=1; i<=5; i++)
+        { foo.push_back(i); bar.push_back(i*10); }
+
+        std::copy (bar.begin(),bar.end(),std::front_inserter(foo));
+
+        std::cout << "foo contains:";
+        for ( std::deque<int>::iterator it = foo.begin(); it!= foo.end(); ++it )
+            std::cout << ' ' << *it;
+        std::cout << '\n';
+    }
+    //inserter, advance
+    {
+        cout<<"inserter & advance"<<endl;
+        std::list<int> foo,bar;
+        for (int i=1; i<=5; i++)
+        { foo.push_back(i); bar.push_back(i*10); }
+
+        std::list<int>::iterator it = foo.begin();
+        advance (it,3);
+
+        std::copy (bar.begin(),bar.end(),std::inserter(foo,it));
+
+        std::cout << "foo contains:";
+        for ( std::list<int>::iterator it = foo.begin(); it!= foo.end(); ++it )
+            std::cout << ' ' << *it;
+        std::cout << '\n';
+
+    }
+    //advance
+    {
+        std::list<int> mylist;
+        for (int i=0; i<10; i++) mylist.push_back (i*10);
+
+        std::list<int>::iterator it = mylist.begin();
+
+        std::advance (it,5);
+
+        std::cout << "The sixth element in mylist is: " << *it << '\n';
+    }
+    //transform
+    {
+        std::vector<int> foo;
+        std::vector<int> bar;
+
+        // set some values:
+        for (int i=1; i<6; i++)
+            foo.push_back (i*10);                         // foo: 10 20 30 40 50
+
+        bar.resize(foo.size());                         // allocate space
+
+        std::transform (foo.begin(), foo.end(), bar.begin(), [](int i){return ++i;});
+        // bar: 11 21 31 41 52
+
+        // std::plus adds together its two arguments:
+        std::transform (foo.begin(), foo.end(), bar.begin(), foo.begin(), std::plus<int>());
+        // foo: 21 41 61 81 101
+
+        std::cout << "foo contains:";
+        for (std::vector<int>::iterator it=foo.begin(); it!=foo.end(); ++it)
+            std::cout << ' ' << *it;
+        std::cout << '\n';
+
+        vector<int> vi={1,2,3,4,5};
+        vector<int> vj={1,2,3,4,5};
+        vector<int> vs;
+        vs.resize(vi.size());
+        transform(vi.begin(), vi.end(), vj.begin(), vs.begin(), [](int&i, int&j){ return i*j;});
+        bool res = equal(vi.begin(), vi.end(), vs.begin(), [](int&i, int&j){ return i*i == j;});
+        for (auto m:vs)
+            cout<<m<<" ";
+        cout<<endl;
+        ASSERT_EQ(res, true);
+    }
+
     //fill
     {
         cout<<"fill"<<endl;
@@ -271,6 +390,19 @@ TEST(Test_STLAlgo, Algo)
         fill_n(vi.begin(), 3, 5);
         for_each(vi.begin(),vi.begin()+3,[](int& v){ ASSERT_EQ(v, 5);});
         ASSERT_EQ(vi[4],0);
+    }
+    //generate
+    {
+        cout<<"generate"<<endl;
+        vector<int> vi;
+        vi.resize(5);
+        int init=0;
+        generate(vi.begin(), vi.end(), [&init](){return init++;});
+        for_each(vi.begin(), vi.end(), [](int& i){cout<<' '<<i;});
+        cout<<endl;
+
+        generate(vi.begin(), vi.end(), [](){return rand()%100;});
+
     }
     //random_shuffle
     {
@@ -366,6 +498,35 @@ TEST(Test_STLAlgo, Algo)
 
         if (it!=haystack.end())
             std::cout << "The first match is: " << *it << '\n';
+    }
+    //find_end
+    {
+        /*
+         * Searches the range [first1,last1) for the last occurrence of the sequence defined by [first2,last2),
+         * and returns an iterator to its first element, or last1 if no occurrences are found.
+         * The elements in both ranges are compared sequentially using operator== (or pred, in version (2)):
+         * A subsequence of [first1,last1) is considered a match only when this is true for all the elements of [first2,last2).
+         * This function returns the last of such occurrences. For an algorithm that returns the first instead, see search.
+         */
+        int myints[] = {1,2,3,4,5,1,2,3,4,5};
+        std::vector<int> haystack (myints,myints+10);
+
+        int needle1[] = {1,2,3};
+
+        // using default comparison:
+        std::vector<int>::iterator it;
+        it = std::find_end (haystack.begin(), haystack.end(), needle1, needle1+3);
+
+        if (it!=haystack.end())
+            std::cout << "needle1 last found at position " << (it-haystack.begin()) << '\n';
+
+        int needle2[] = {4,5,1};
+
+        // using predicate comparison:
+        it = std::find_end (haystack.begin(), haystack.end(), needle2, needle2+3, [](int i, int j){return i==j;});
+
+        if (it!=haystack.end())
+            std::cout << "needle2 last found at position " << (it-haystack.begin()) << '\n';
     }
     //search
     {
