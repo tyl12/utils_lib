@@ -312,6 +312,22 @@ TEST(Test_STLAlgo, Algo)
             std::cout << ' ' << *it;
         std::cout << '\n';
     }
+    //back_inserter, front_inserter
+    {
+        cout<<"back_inserter & front_inserter empty vector"<<endl;
+        std::vector<int> empty;
+        fill_n(back_inserter(empty), 5, 10);
+        for (auto i:empty)
+            cout<<i<<" ";
+        cout<<endl;
+
+        std::deque<int> empty2;
+        fill_n(back_inserter(empty2), 5, 10);
+        fill_n(front_inserter(empty2), 5, 20);
+        for (auto i:empty2)
+            cout<<i<<" ";
+        cout<<endl;
+    }
     //inserter, advance
     {
         cout<<"inserter & advance"<<endl;
