@@ -13,6 +13,7 @@
 #include <thread>
 #include <chrono>
 #include <iostream>
+#include <iterator>
 
 //#include <boost/ref.hpp>
 //#include <boost/asio.hpp>
@@ -28,6 +29,17 @@ namespace utils{
 static bool gDebug=false;
 
 
+string merge_intvector_to_string_with_traits(vector<int> data){
+    std::ostringstream vts;
+    if (!data.empty()) {
+        // Convert all but the last element to avoid a trailing ","
+        std::copy(data.begin(), data.end()-1, std::ostream_iterator<int>(vts, ", "));
+        // Now add the last element with no delimiter
+        vts << data.back();
+        cout<<"merged vector to string: "<<endl;
+    }
+    return vts.str();
+}
 
 int wait_for_network_block(){
     while(true){

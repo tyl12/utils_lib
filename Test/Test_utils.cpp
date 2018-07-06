@@ -73,6 +73,13 @@ TEST(Test_std, StdExample) {
     string p=s.substr(s.find_first_not_of(":$!#"));
     ASSERT_EQ("abc", p);
 }
+
+TEST(Test_merge_intvector_to_string_with_traits, merge_intvvector) {
+    vector<int> data = {1,2,3,4,5};
+    string m = merge_intvector_to_string_with_traits(data);
+    cout << m << endl;
+    ASSERT_EQ("1, 2, 3, 4, 5" , m);
+}
 #endif
 
 #if 1

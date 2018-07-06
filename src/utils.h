@@ -44,6 +44,8 @@ namespace utils{
 string& trim(string &s);
 vector<string> split_by_delim(const string& line, const char ch);
 
+string merge_intvector_to_string_with_traits(vector<int> data);
+
 int launch_cmd(const char* cmd, vector<string>& output);
 vector<string> get_current_mac_addrs();
 
