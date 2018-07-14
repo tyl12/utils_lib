@@ -224,6 +224,14 @@ vector<string> split_by_regex(const string& s, const regex& delims){
         output.emplace_back((*i).str());
     return output;
 }
+/*
+std::string::substr
+string substr (size_t pos = 0, size_t len = npos) const;
+Generate substring
+Returns a newly constructed string object with its value initialized to a copy of a substring of this object.
+
+The substring is the portion of the object that starts at character position pos and spans len characters (or until the end of the string, whichever comes first).
+*/
 vector<string> split_by_find(const string& s, const string& delims){
     if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
     printf("%s: input: %s\n", __FUNCTION__, s.c_str());
