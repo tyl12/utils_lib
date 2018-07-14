@@ -149,6 +149,15 @@ TEST(Test_circ_buffer, CircBuffer){
 }
 #endif
 
+TEST(Test_Log, Log){
+    LOGD("|%10s, %10d|", "123", 123);
+    LOGE("|%10s, %10d|", "123", 123);
+    LOGD2("|%-10s, %-10d|", "123", 123);
+    LOGD2("|%-10s, %-10d|", "123", 123);
+    string m1 = string_format("|%10s, %10d|", "123", 123);
+    string m2 = string_format2("|%10s, %10d|", "123", 123);
+}
+
 TEST(Test_STLAlgo, Algo)
 {
     //for_each

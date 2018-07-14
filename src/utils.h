@@ -36,6 +36,26 @@ namespace utils{
 //#define LOGD(fmt, ...)  do{ printf("DEBUG: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
 //#define LOGE(fmt, ...)  do{ printf("ERROR: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
 
+#define LOGD2(fmt, args...) fprintf (stdout, "%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__,args)
+#define LOGE2(fmt, args...) fprintf (stderr, "%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__,args)
+
+template<typename ... Args>
+string string_format( const std::string& format, Args ... args )
+{
+    size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
+    std::unique_ptr<char[]> buf( new char[ size ] );
+    snprintf( buf.get(), size, format.c_str(), args ... );
+    return string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
+}
+
+#define string_format2(format, args...)\
+    ({ \
+        size_t size = snprintf( nullptr, 0, format , args ) + 1; \
+        std::unique_ptr<char[]> buf( new char[ size ] ); \
+        snprintf( buf.get(), size, format, args); \
+        string( buf.get(), buf.get() + size - 1 );\
+    })
+
 /*
  * 删除字符串头尾的空格字符,
  * input: inplace 操作，会改变输入字符串,
