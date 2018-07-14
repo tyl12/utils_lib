@@ -1,7 +1,9 @@
 #include <stdio.h>
+#include <regex>
 #include <stdlib.h>
 #include <locale.h>
 #include <unistd.h>
+#include <algorithm>
 #include <fcntl.h>
 #include <string.h>
 #include <string>
@@ -97,18 +99,107 @@ bool comparemd5(const char* file, const string& md5, bool withroot = false)
 }
 
 
-string& trim(string &s)
+const string WHITE_SPACE_STR=" \n\r\t\f\v";
+
+#define TRIM_V1 1
+#if TRIM_V1
+
+//inplace trim
+string& ltrim_inplace(string& s)
 {
-    if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
-    if (s.empty())
-    {
-        return s;
-    }
-    s.erase(0,s.find_first_not_of(" "));
-    s.erase(s.find_last_not_of(" ") + 1);
-    if (gDebug) printf("%s: output: %s\n", __FUNCTION__, s.c_str());
+    size_t start=s.find_first_not_of(WHITE_SPACE_STR);
+    if (start == string::npos)
+        s.clear();
+    else
+        s.erase(0, start);
     return s;
 }
+string& rtrim_inplace(string& s)
+{
+    size_t end=s.find_last_not_of(WHITE_SPACE_STR);
+    if (end == string::npos)
+        s.clear();
+    else
+        s.erase(end+1);
+    return s;
+}
+string& lrtrim_inplace(string& s)
+{
+    //if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
+    return rtrim_inplace(ltrim_inplace(s));
+}
+
+//not inplace, use find_first/last_not_of
+string ltrim(const string& s)
+{
+    size_t start = s.find_first_not_of(WHITE_SPACE_STR);
+    return (start == string::npos)? "" : s.substr(start);
+}
+string rtrim(const string& s)
+{
+    size_t end = s.find_last_not_of(WHITE_SPACE_STR);
+    return (end == string::npos)? "" : s.substr(0, end+1); //##@@##
+}
+string lrtrim(const string& s)
+{
+    return rtrim(ltrim(s));
+}
+#elif TRIM_V2
+
+/*
+int isspace ( int c );
+Check if character is a white-space
+Checks whether c is a white-space character.
+
+For the "C" locale, white-space characters are any of:
+' '	(0x20)	space (SPC)
+'\t'	(0x09)	horizontal tab (TAB)
+'\n'	(0x0a)	newline (LF)
+'\v'	(0x0b)	vertical tab (VT)
+'\f'	(0x0c)	feed (FF)
+'\r'	(0x0d)	carriage return (CR)
+
+Other locales may consider a different selection of characters as white-spaces, but never a character that returns true for isalnum.
+For a detailed chart on what the different ctype functions return for each character of the standard ASCII character set, see the reference for the <cctype> header.
+In C++, a locale-specific template version of this function (isspace) exists in header <locale>.
+*/
+
+//inplace
+string& ltrim_inplace(string& s)
+{
+    auto it = find_if(s.begin(), s.end(), [](char& c){
+        return !isspace<char>(c, locale::classic());
+    });
+    s.erase(s.begin(), it);
+    return s;
+}
+string& rtrim_inplace(string& s)
+{
+    auto it = find_if(s.rbegin(), s.rend(), [](char& c){
+        return !isspace<char>(c, locale::classic());
+    });
+    s.erase(it.base(), s.end());
+    return s;
+}
+string& lrtrim_inplace(string& s)
+{
+    return rtrim_inplace(ltrim_inplace(s));
+}
+#elif TRIM_V3
+//not inplace
+string ltrim(const string& s)
+{
+    return regex_replace(s, regex("^\\s+"), string(""));
+}
+string rtrim(const string& s)
+{
+    return regex_replace(s, regex("\\s+$"), string(""));
+}
+string lrtrim(const string& s)
+{
+    rtrim(ltrim(s));
+}
+#endif
 
 vector<string> split_by_delim(const string& line, const char ch){
     if (gDebug) printf("%s: input: %s\n", __FUNCTION__, line.c_str());
@@ -121,6 +212,48 @@ vector<string> split_by_delim(const string& line, const char ch){
     }
     return output;
 }
+
+//c11
+vector<string> split_by_regex(const string& s, const regex& delims){
+    if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
+    vector<string> output;
+
+    auto begin = sregex_iterator(s.begin(), s.end(), delims);
+    auto end = sregex_iterator();
+    for (auto i = begin; i != end; ++i)
+        output.emplace_back((*i).str());
+    return output;
+}
+vector<string> split_by_find(const string& s, const string& delims){
+    if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
+    printf("%s: input: %s\n", __FUNCTION__, s.c_str());
+    vector<string> output;
+    string val;
+
+    size_t start = 0;
+    cout<<"##@@## stsringlen="<<s.length()<<endl;
+    while(start != string::npos && start < s.length()){
+        size_t pos = s.find_first_of(delims, start);
+        cout<<"--> start="<<start<< " pos="<<pos<<endl;
+        if (pos == start){
+            output.push_back("");
+            start = pos+1;
+            continue;
+        }
+        if (pos == string::npos){
+            output.push_back(s.substr(start));
+            break;
+        }
+        /*if (pos > start && pos != string::npos)*/{
+            output.push_back(s.substr(start, pos-start));//not include the delims found
+            start = pos+1;
+            continue;
+        }
+        cerr<<"sth. Wrong..."<<endl;
+    }
+    return output;
+}
+
 
 int launch_cmd(const char* cmd_in, vector<string>& output){
     FILE *fpipe;
@@ -149,7 +282,7 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
             if (gDebug) printf("%s: %s\n", __FUNCTION__, val);
             result += val;
             result.erase(result.end()-1);//remove tailing '\n'
-            trim(result);
+            lrtrim_inplace(result);
             if (!result.empty())
                 output.push_back(move(result));
             result.clear();

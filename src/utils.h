@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
+#include <regex>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -61,8 +62,17 @@ string string_format( const std::string& format, Args ... args )
  * input: inplace 操作，会改变输入字符串,
  * output: 输入字符串经过trim操作之后的结果字符串的引用
  */
-string& trim(string &s);
+string& ltrim_inplace(string &s);
+string& rtrim_inplace(string &s);
+string& lrtrim_inplace(string &s);
+
+string ltrim(const string &s);
+string rtrim(const string &s);
+string lrtrim(const string &s);
+
 vector<string> split_by_delim(const string& line, const char ch);
+vector<string> split_by_regex(const string& s, const regex& delims);
+vector<string> split_by_find(const string& s, const string& delims);
 
 string merge_intvector_to_string_with_traits(vector<int> data);
 
