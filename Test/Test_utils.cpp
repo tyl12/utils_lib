@@ -162,6 +162,19 @@ TEST(Test_split_by_regex, SplitString) {
     ASSERT_EQ(":", strs[4]);
     ASSERT_EQ(":6", strs[5]);
 }
+TEST(Test_split_by_regex_search, regexSearch) {
+    string str = "test0, test1 , ,,test4,";
+    vector<string> strs = split_by_regex_search(str, regex("([^,]*),"));
+    for(auto&& s: strs){
+        cout<<s<<endl;
+    }
+    ASSERT_EQ(5, strs.size());
+    ASSERT_EQ("test0", strs[0]);
+    ASSERT_EQ(" test1 ", strs[1]);
+    ASSERT_EQ(" ", strs[2]);
+    ASSERT_EQ("", strs[3]);
+    ASSERT_EQ("test4", strs[4]);
+}
 
 TEST(Test_std, StdExample) {
     string s = "a:b:c##@@c";

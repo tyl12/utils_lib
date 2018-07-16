@@ -72,6 +72,7 @@ string lrtrim(const string &s);
 
 vector<string> split_by_delim(const string& line, const char ch);
 vector<string> split_by_regex(const string& s, const regex& delims);
+vector<string> split_by_regex_search(const string& s, const regex& delims);
 vector<string> split_by_find(const string& s, const string& delims);
 
 string merge_intvector_to_string_with_traits(vector<int> data);

@@ -224,6 +224,33 @@ vector<string> split_by_regex(const string& s, const regex& delims){
         output.emplace_back((*i).str());
     return output;
 }
+
+vector<string> split_by_regex_search(const string& str, const regex& delims){
+    if (gDebug) printf("%s: input: %s\n", __FUNCTION__, str.c_str());
+    vector<string> output;
+    smatch result;
+    string s = str;
+    int i = 0;
+    while (regex_search(s, result, delims)){
+        if (result.ready()){
+            /*
+            cout<<"prefix=["<<result.prefix()<<"]"<<endl;
+            cout<<"suffix=["<<result.suffix()<<"]"<<endl;
+            */
+            /*
+            for (auto x:result){
+                cout<<x<<endl;
+            }
+            */
+            cout<<"index="<<i<<", result=["<<result[1]<<"]"<<endl;
+            output.emplace_back(result[1]);
+            s = result.suffix();
+            i++;
+        }
+    }
+    return output;
+}
+
 /*
 std::string::substr
 string substr (size_t pos = 0, size_t len = npos) const;
@@ -239,7 +266,7 @@ vector<string> split_by_find(const string& s, const string& delims){
     string val;
 
     size_t start = 0;
-    cout<<"##@@## stsringlen="<<s.length()<<endl;
+    cout<<"##@@## stringlen="<<s.length()<<endl;
     while(start != string::npos && start < s.length()){
         size_t pos = s.find_first_of(delims, start);
         cout<<"--> start="<<start<< " pos="<<pos<<endl;
