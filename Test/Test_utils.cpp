@@ -175,6 +175,44 @@ TEST(Test_split_by_regex_search, regexSearch) {
     ASSERT_EQ("", strs[3]);
     ASSERT_EQ("test4", strs[4]);
 }
+TEST(Test_search_regex_string, searchRegex)
+{
+    string s;
+
+    s="Testtest 12345 abcde";
+    smatch m;
+    regex icaseReg("te.*t", std::regex_constants::icase);//ignore case
+    if (regex_search(s, m, icaseReg)){
+        for (unsigned int i=0; i <m.size(); i++){
+            cout<<"[" << m[i] << "] ";
+        }
+    }
+    ASSERT_EQ(1, m.size());
+    ASSERT_EQ("Testtest", m[0]);
+
+    regex greedy("Te.*t"); //greedy
+    if (regex_search(s, m, greedy)){
+        for (unsigned int i=0; i <m.size(); i++){
+            cout<<"[" << m[i] << "] ";
+        }
+    }
+    ASSERT_EQ(1, m.size());
+    ASSERT_EQ("Testtest", m[0]);
+
+    regex nongreedy("Te.*?t"); //non-greedy
+    if (regex_search(s, m, nongreedy)){
+        for (unsigned int  i=0; i <m.size(); i++){
+            cout<<"[" << m[i] << "] ";
+        }
+    }
+    ASSERT_EQ(1, m.size());
+    ASSERT_EQ("Test", m[0]);
+
+    regex failstr("nomatch");
+    ASSERT_EQ(false, regex_search(s, m, failstr));
+    ASSERT_EQ(true, m.empty());
+    ASSERT_EQ(0, m.size());
+}
 
 TEST(Test_std, StdExample) {
     string s = "a:b:c##@@c";

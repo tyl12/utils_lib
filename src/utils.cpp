@@ -30,7 +30,6 @@ namespace utils{
 
 static bool gDebug=false;
 
-
 string merge_intvector_to_string_with_traits(vector<int> data){
     std::ostringstream vts;
     if (!data.empty()) {
