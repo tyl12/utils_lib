@@ -76,6 +76,49 @@ TEST(Test_split_by_delim, SplitString) {
     ASSERT_EQ("6", strs[6]);
 }
 
+TEST(Test_split_by_delims, SplitDelims) {
+    vector<string> strs = split_by_delims(":abc: :efg:1234 5 ::6", ",:");
+    for(auto&& s: strs){
+        cout<<s<<endl;
+    }
+    ASSERT_EQ(7, strs.size());
+    ASSERT_EQ("", strs[0]);
+    ASSERT_EQ("abc", strs[1]);
+    ASSERT_EQ(" ", strs[2]);
+    ASSERT_EQ("efg", strs[3]);
+    ASSERT_EQ("1234 5 ", strs[4]);
+    ASSERT_EQ("", strs[5]);
+    ASSERT_EQ("6", strs[6]);
+
+
+    strs = split_by_delims(":abc: ,efg:1234 5 ,:6,", ",:");
+    for(auto&& s: strs){
+        cout<<s<<endl;
+    }
+    ASSERT_EQ(7, strs.size());
+    ASSERT_EQ("", strs[0]);
+    ASSERT_EQ("abc", strs[1]);
+    ASSERT_EQ(" ", strs[2]);
+    ASSERT_EQ("efg", strs[3]);
+    ASSERT_EQ("1234 5 ", strs[4]);
+    ASSERT_EQ("", strs[5]);
+    ASSERT_EQ("6", strs[6]);
+
+    strs = split_by_delims(":abc: ,efg:1234 5 ,:6, ", ",:");
+    for(auto&& s: strs){
+        cout<<s<<endl;
+    }
+    ASSERT_EQ(8, strs.size());
+    ASSERT_EQ("", strs[0]);
+    ASSERT_EQ("abc", strs[1]);
+    ASSERT_EQ(" ", strs[2]);
+    ASSERT_EQ("efg", strs[3]);
+    ASSERT_EQ("1234 5 ", strs[4]);
+    ASSERT_EQ("", strs[5]);
+    ASSERT_EQ("6", strs[6]);
+    ASSERT_EQ(" ", strs[7]);
+}
+
 TEST(Test_split_by_find, SplitString) {
     vector<string> strs = split_by_find(":abc::efg:1234 5 ::6", ":");
     for(auto&& s: strs){
@@ -117,8 +160,8 @@ TEST(Test_split_by_find, SplitString) {
     ASSERT_EQ("", strs[6]);
     ASSERT_EQ("6", strs[7]);
 }
-TEST(Test_split_by_regex, SplitString) {
-    vector<string> strs = split_by_regex(":abc::efg:1234 5 ::6", regex("[^:\\s\\t]+"));
+TEST(Test_split_by_regex_iterator, SplitString) {
+    vector<string> strs = split_by_regex_iterator(":abc::efg:1234 5 ::6", regex("[^:\\s\\t]+"));
     for(auto&& s: strs){
         cout<<s<<endl;
     }
@@ -129,7 +172,7 @@ TEST(Test_split_by_regex, SplitString) {
     ASSERT_EQ("5", strs[3]);
     ASSERT_EQ("6", strs[4]);
 
-    strs = split_by_regex(":abc::efg:1234 5 ::6:", regex("[^:\\s\\t]+"));
+    strs = split_by_regex_iterator(":abc::efg:1234 5 ::6:", regex("[^:\\s\\t]+"));
     for(auto&& s: strs){
         cout<<s<<endl;
     }
@@ -140,7 +183,7 @@ TEST(Test_split_by_regex, SplitString) {
     ASSERT_EQ("5", strs[3]);
     ASSERT_EQ("6", strs[4]);
 
-    strs = split_by_regex(":abc::efg:1234 5 ::6", regex("[^:]+"));
+    strs = split_by_regex_iterator(":abc::efg:1234 5 ::6", regex("[^:]+"));
     for(auto&& s: strs){
         cout<<s<<endl;
     }
@@ -150,7 +193,7 @@ TEST(Test_split_by_regex, SplitString) {
     ASSERT_EQ("1234 5 ", strs[2]);
     ASSERT_EQ("6", strs[3]);
 
-    strs = split_by_regex(":abc::efg:1234 5 ::6", regex(":[^:]*"));
+    strs = split_by_regex_iterator(":abc::efg:1234 5 ::6", regex(":[^:]*"));
     for(auto&& s: strs){
         cout<<s<<endl;
     }
@@ -163,8 +206,19 @@ TEST(Test_split_by_regex, SplitString) {
     ASSERT_EQ(":6", strs[5]);
 }
 TEST(Test_split_by_regex_search, regexSearch) {
-    string str = "test0, test1 , ,,test4,";
-    vector<string> strs = split_by_regex_search(str, regex("([^,]*),"));
+    string str = "test0, test1 , ,,test4,";//ends with delim
+    vector<string> strs = split_by_regex_search(str, regex("[^,]+"));
+    for(auto&& s: strs){
+        cout<<s<<endl;
+    }
+    ASSERT_EQ(4, strs.size());
+    ASSERT_EQ("test0", strs[0]);
+    ASSERT_EQ(" test1 ", strs[1]);
+    ASSERT_EQ(" ", strs[2]);
+    ASSERT_EQ("test4", strs[3]);
+
+    str = "test0, test1 , ,,test4, "; //ends with whitespace
+    strs = split_by_regex_search(str, regex("[^,]+"));
     for(auto&& s: strs){
         cout<<s<<endl;
     }
@@ -172,8 +226,10 @@ TEST(Test_split_by_regex_search, regexSearch) {
     ASSERT_EQ("test0", strs[0]);
     ASSERT_EQ(" test1 ", strs[1]);
     ASSERT_EQ(" ", strs[2]);
-    ASSERT_EQ("", strs[3]);
-    ASSERT_EQ("test4", strs[4]);
+    ASSERT_EQ("test4", strs[3]);
+    ASSERT_EQ(" ", strs[4]);
+
+
 }
 TEST(Test_search_regex_string, searchRegex)
 {

@@ -211,26 +211,53 @@ vector<string> split_by_delim(const string& line, const char ch){
     }
     return output;
 }
+vector<string> split_by_delims(const string& str, const string& delims){
+    string patternstr=string("[^")+delims+"]*["+delims+"]";
+    cout<<"search pattern="<<patternstr<<endl;
+
+    regex pattern(patternstr);
+    vector<string> output;
+    smatch result;
+    string s = str;
+    int i = 0;
+    while (regex_search(s, result, pattern)){
+        if (result.ready()){
+            cout<<"index="<<i<<", result=["<<result[0]<<"]"<<endl;
+            string tmp = result[0];
+            char delim = *tmp.rbegin(); //or: tmp.back();
+            if (delims.find(delim) != string::npos){
+                tmp.erase(tmp.end()-1);
+            }
+            output.emplace_back(tmp);
+            s = result.suffix();
+            i++;
+        }
+    }
+    if (s!="")
+        output.emplace_back(s);
+    return output;
+}
 
 //c11
-vector<string> split_by_regex(const string& s, const regex& delims){
+vector<string> split_by_regex_iterator(const string& s, const regex& pattern){
     if (gDebug) printf("%s: input: %s\n", __FUNCTION__, s.c_str());
     vector<string> output;
 
-    auto begin = sregex_iterator(s.begin(), s.end(), delims);
+    auto begin = sregex_iterator(s.begin(), s.end(), pattern);
     auto end = sregex_iterator();
     for (auto i = begin; i != end; ++i)
         output.emplace_back((*i).str());
     return output;
 }
 
-vector<string> split_by_regex_search(const string& str, const regex& delims){
+vector<string> split_by_regex_search(const string& str, const regex& pattern){
     if (gDebug) printf("%s: input: %s\n", __FUNCTION__, str.c_str());
     vector<string> output;
     smatch result;
     string s = str;
     int i = 0;
-    while (regex_search(s, result, delims)){
+    //while (!s.empty() && regex_search(s, result, delims)){
+    while (regex_search(s, result, pattern)){
         if (result.ready()){
             /*
             cout<<"prefix=["<<result.prefix()<<"]"<<endl;
@@ -241,8 +268,8 @@ vector<string> split_by_regex_search(const string& str, const regex& delims){
                 cout<<x<<endl;
             }
             */
-            cout<<"index="<<i<<", result=["<<result[1]<<"]"<<endl;
-            output.emplace_back(result[1]);
+            cout<<"index="<<i<<", result=["<<result[0]<<"]"<<endl;
+            output.emplace_back(result[0]);
             s = result.suffix();
             i++;
         }
