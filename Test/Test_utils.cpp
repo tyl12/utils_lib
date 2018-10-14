@@ -373,7 +373,7 @@ struct func2{
 
 TEST(Test_ThreadPool, TestThreadPool){
     try{
-        MySpace::ThreadPool executor {10};
+        MySpace::ThreadPool executor{};
         std::future<void> ff = executor.queue(func1);
         std::future<int> fg = executor.queue(func2{});
         auto fh = executor.queue([]()->std::string {

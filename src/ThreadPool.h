@@ -30,9 +30,14 @@ private:
     std::atomic<bool> _exit;
 public:
     // 构造
-    ThreadPool(size_t size =4): _exit {false}{
-        size = size <1?1: size;
-        for(size_t i =0; i< size;++i){
+    ThreadPool(size_t NumThreads = 0): _exit {false}{
+        if (NumThreads < 1){
+            NumThreads = std::thread::hardware_concurrency();
+        }
+        NumThreads = NumThreads <1 ? 1: NumThreads;
+
+        std::cout<<"create Threads Number: "<<NumThreads<<std::endl;
+        for(size_t i =0; i< NumThreads;++i){
             pool.emplace_back(&ThreadPool::schedual,this);// push_back(std::thread{...})
         }
     }
@@ -87,17 +92,16 @@ public:
             //packaged_task.get_future()方法获取的future来获取任务完成后的产出值
             //using ResType = typename std::result_of<F(Args...)>::type;
             using ResType=decltype(f(args...));// typename std::result_of<F(Args...)>::type, 函数 f 的返回值类型
-            auto task = std::make_shared<std::packaged_task<ResType()>>(
+            auto sp_task = std::make_shared<std::packaged_task<ResType()>>(
                 std::bind(std::forward<F>(f), std::forward<Args>(args)...)
             );
             //future为期望，get_future获取任务完成后的产出值
             //获取future对象，如果task的状态不为ready，会阻塞当前调用者
-            std::future<ResType> future = task->get_future();
+            std::future<ResType> future = sp_task->get_future();
             {// 添加任务到队列
                 std::lock_guard<std::mutex> lock {m_task};
                 // push(Task{...})//将task投递给线程去完成，vector尾部压入
-                //tasks.emplace([task](){ (*task)(); });
-                tasks.emplace([task](){ (*task)(); });
+                tasks.emplace([sp_task](){ (*sp_task)(); });
 
                 cv_task.notify_all();// 唤醒线程执行
             }

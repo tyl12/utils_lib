@@ -356,6 +356,64 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
     return 0;
 }
 
+bool startsWith(string s, string sub){
+#if 0
+    return s.find(sub)==0?true:false;
+#else
+    if (strncmp(s.c_str(), sub.c_str(), sub.size()) == 0)
+        return true;
+    return false;
+#endif
+}
+
+int endsWith(string s,string sub){
+#if 0
+    return s.rfind(sub)==(s.length()-sub.length())?true:false;
+#else
+    if (s.size() < sub.size())
+        return false;
+    if (strncmp(s.c_str() + (s.size()-sub.size()), sub.c_str(), sub.size()) == 0)
+        return true;
+    return false;
+#endif
+}
+
+vector<string> get_file_list(const char* filedir, const char* str_start=NULL, const char* str_end=NULL)
+{
+    vector<string> result;
+    struct dirent *ptr;
+    DIR *dir;
+    dir=opendir(filedir);
+
+    LOG_I("filelist:\n");
+    while((ptr=readdir(dir))!=NULL)
+    {
+        //跳过'.'和'..'两个目录
+        if(ptr->d_name == NULL || (strlen(ptr->d_name) == 1 &&  ptr->d_name[0] == '.'))
+            continue;
+
+        if (str_start != NULL && !startsWith(ptr->d_name, str_start))
+            continue;
+
+        if (str_end != NULL && !endsWith(ptr->d_name, str_end))
+            continue;
+
+        LOG_I("%s\n",ptr->d_name);
+        result.push_back(string(ptr->d_name));
+    }
+    closedir(dir);
+
+    sort(result.begin(), result.end());
+
+    LOG_I("sorted file list:\n");
+    int i = 0;
+    for (auto s:result){
+        LOG_I("%02d:%s\n", i, s.c_str());
+        i++;
+    }
+    LOG_I("\n");
+    return result;
+}
 
 vector<string> get_current_mac_addrs(){
     vector<string> output;
