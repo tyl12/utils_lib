@@ -16,6 +16,7 @@
 #include <chrono>
 #include <iostream>
 #include <iterator>
+#include <dirent.h>
 
 //#include <boost/ref.hpp>
 //#include <boost/asio.hpp>
@@ -382,14 +383,15 @@ vector<string> get_file_list(const char* filedir, const char* str_start=NULL, co
 {
     vector<string> result;
     struct dirent *ptr;
-    DIR *dir;
-    dir=opendir(filedir);
 
-    LOG_I("filelist:\n");
-    while((ptr=readdir(dir))!=NULL)
+    shared_ptr<DIR> dir(opendir(filedir), [](DIR* dir){ closedir(dir);});
+
+    printf("filelist:\n");
+    while((ptr=readdir(dir.get()))!=NULL)
     {
         //跳过'.'和'..'两个目录
-        if(ptr->d_name == NULL || (strlen(ptr->d_name) == 1 &&  ptr->d_name[0] == '.'))
+        if((strlen(ptr->d_name) == 1 &&  ptr->d_name[0] == '.') ||
+           (strlen(ptr->d_name) == 2 &&  ptr->d_name[0] == '.' && ptr->d_name[1] == '.' ))
             continue;
 
         if (str_start != NULL && !startsWith(ptr->d_name, str_start))
@@ -398,20 +400,19 @@ vector<string> get_file_list(const char* filedir, const char* str_start=NULL, co
         if (str_end != NULL && !endsWith(ptr->d_name, str_end))
             continue;
 
-        LOG_I("%s\n",ptr->d_name);
+        printf("%s\n",ptr->d_name);
         result.push_back(string(ptr->d_name));
     }
-    closedir(dir);
 
     sort(result.begin(), result.end());
 
-    LOG_I("sorted file list:\n");
+    printf("sorted file list:\n");
     int i = 0;
     for (auto s:result){
-        LOG_I("%02d:%s\n", i, s.c_str());
+        printf("%02d:%s\n", i, s.c_str());
         i++;
     }
-    LOG_I("\n");
+    printf("\n");
     return result;
 }
 
@@ -576,4 +577,77 @@ int restore_stdout(){
     return 0;
 }
 
+int exec_cmd(const char *shell_cmd)
+{
+    printf("[thread-id:%zu]exec: \"%s\"\n", pthread_self(), shell_cmd);
+    pid_t status = system(shell_cmd);
+    if (-1 == status) {
+        printf("system error!\n");
+        return -1;
+    }
+    printf("exit status value = [0x%x]\n", status);
+    printf("exit status = [%d]\n", WEXITSTATUS(status));
+    if (WIFEXITED(status)) {
+        if (0 == WEXITSTATUS(status)) {
+            printf("run system call <%s> successfully.\n", shell_cmd);
+        }
+        else {
+            printf("run system call <%s> fail, script exit code: %d\n", shell_cmd, WEXITSTATUS(status));
+        }
+    }
+    return WEXITSTATUS(status);
 }
+
+//execute the cmd in subprocess in sync mode and read the stdout
+#define BUF_LEN (256)
+int exec_popen(const char* cmd) {
+
+    char buffer[BUF_LEN];
+    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
+    if (!pipe){
+        printf("ERROR! fail to popen %s\n", cmd);
+        throw std::runtime_error("popen() failed!");
+    }
+    while (!feof(pipe.get())) {
+        if (fgets(buffer, BUF_LEN, pipe.get()) != nullptr)
+            printf("%s",buffer);
+    }
+    return 0;
+}
+
+
+int wait_system_boot_complete(const vector<string>& mountlist_input){
+    auto mountlist = mountlist_input;
+    if (mountlist.size() == 0){
+        mountlist = vector<string>({
+            "/data",
+            "/mnt/runtime/default/emulated",
+            "/storage/emulated",
+            "/mnt/runtime/read/emulated",
+            "/mnt/runtime/write/emulated"
+        });
+    }
+
+    printf("%s: start to check mount list\n",__FUNCTION__);
+    for (const auto& mnt:mountlist){
+        printf("%s: check for mount point: %s", __FUNCTION__, mnt.c_str());
+        while(true){
+            string cmd="mountpoint -q " + mnt;
+            printf("%s: execute cmd: %s\n", __FUNCTION__, cmd.c_str());
+            if (exec_cmd(cmd.c_str()) == 0){
+                printf("%s: %s is mounted", __FUNCTION__, mnt.c_str());
+                break; //continue to next mnt point
+            }
+            else{
+                printf("%s: %s is NOT mounted, wait", __FUNCTION__, mnt.c_str());
+                sleep(10);
+                continue;
+            }
+        }
+    }
+    sleep(10);
+    return 0;
+}
+
+}
+

@@ -94,6 +94,8 @@ string get_date_sec();
 int redirect_stdout_stderr(const char* fname);
 int restore_stdout();
 
+int exec_popen(const char* cmd);
+
 }
 #endif
 
