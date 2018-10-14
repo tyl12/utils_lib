@@ -615,6 +615,19 @@ int exec_popen(const char* cmd) {
     return 0;
 }
 
+#define SHELL_BIN               ("bash")
+int exec_shell_script(const char* script_dir, const char* script_file){
+    string cmd = string(SHELL_BIN) + " " + script_dir + "/" + script_file;
+    printf("start to execute: %s\n", script_file);
+    cmd = cmd + " 2>&1 | sed  's/^/["+ script_file +"] /'";
+    int ret = exec_cmd(cmd.c_str());
+    if (ret){
+        printf("ERROR: execute %s failed. retry\n", script_file);
+        return 1;
+    }
+    printf("execute %s success. continue\n", script_file);
+    return 0;
+}
 
 int wait_system_boot_complete(const vector<string>& mountlist_input){
     auto mountlist = mountlist_input;
