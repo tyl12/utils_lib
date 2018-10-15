@@ -297,7 +297,7 @@ TEST(Test_UtilSingleton, Singletone) {
                 cout << m_strData.data() << endl;
             };
             ~MyClass() {
-                cout << "destory" << endl;
+                cout << "destroy" << endl;
             };
             string getName(){
                 return m_strData;
@@ -313,8 +313,9 @@ TEST(Test_UtilSingleton, Singletone) {
     auto pClass2 = UtilSingleton<MyClass>::GetInstance("create_test");
     ASSERT_EQ(name, pClass->getName());
     ASSERT_EQ(name, pClass2->getName());
-
+#if 0
     UtilSingleton<MyClass>::DesInstance();
+#endif
 }
 
 TEST(Test_perf, Perf) {
