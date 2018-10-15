@@ -38,7 +38,8 @@ public:
 
         std::cout<<"create Threads Number: "<<NumThreads<<std::endl;
         for(size_t i =0; i< NumThreads;++i){
-            pool.emplace_back(&ThreadPool::schedual,this);// push_back(std::thread{...})
+            //pool.emplace_back(&ThreadPool::schedule,this);// push_back(std::thread{...})
+            pool.emplace_back(std::bind(&ThreadPool::schedule,this));
         }
     }
 #if 0
@@ -120,8 +121,9 @@ private:
         tasks.pop();
         return task;
     }
+
     // 任务调度
-    void schedual(){
+    void schedule(){
         while(true){
             if(Task task = get_one_task()){
                 task();
