@@ -11,11 +11,11 @@
 #include<queue>
 
 // 命名空间
-namespace MySpace {
+namespace utils {
     class ThreadPool;
 }
 
-class MySpace::ThreadPool{
+class utils::ThreadPool{
     using Task= std::function<void()>;
     Task EmptyTask = Task([](){});
 private:
