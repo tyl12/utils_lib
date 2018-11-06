@@ -287,6 +287,13 @@ TEST(Test_merge_intvector_to_string_with_traits, merge_intvvector) {
     cout << m << endl;
     ASSERT_EQ("1, 2, 3, 4, 5" , m);
 }
+
+TEST(Test_format_string, format_string) {
+    string fs = format_string("formatstring: %d, %s, %p\n", 123, "12345", 0x123);
+    cout << fs << endl;
+
+    ASSERT_EQ("formatstring: 123, 12345, 0x123\n" , fs);
+}
 #endif
 
 #if 1

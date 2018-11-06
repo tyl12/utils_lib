@@ -18,6 +18,14 @@
 #include <iterator>
 #include <dirent.h>
 
+
+//for format_string
+#include <iostream>
+#include <vector>
+#include <cstdarg>
+#include <cstring>
+
+
 //#include <boost/ref.hpp>
 //#include <boost/asio.hpp>
 //#include <boost/bind.hpp>
@@ -357,7 +365,7 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
     return 0;
 }
 
-bool startsWith(string s, string sub){
+bool startsWith(const string& s, const string& sub){
 #if 0
     return s.find(sub)==0?true:false;
 #else
@@ -367,7 +375,7 @@ bool startsWith(string s, string sub){
 #endif
 }
 
-int endsWith(string s,string sub){
+int endsWith(const string& s, const string& sub){
 #if 0
     return s.rfind(sub)==(s.length()-sub.length())?true:false;
 #else
@@ -662,5 +670,19 @@ int wait_system_boot_complete(const vector<string>& mountlist_input){
     return 0;
 }
 
+string format_string(const std::string& format, ...)
+{
+    va_list args;
+    va_start (args, format);
+    size_t len = std::vsnprintf(NULL, 0, format.c_str(), args);
+    va_end (args);
+    std::vector<char> vec(len + 1);
+    va_start (args, format);
+    std::vsnprintf(&vec[0], len + 1, format.c_str(), args);
+    va_end (args);
+    return &vec[0];
 }
+
+}
+
 

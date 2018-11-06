@@ -97,6 +97,8 @@ int restore_stdout();
 int exec_popen(const char* cmd);
 int exec_shell_script(const char* script_dir, const char* script_file);
 
+string format_string(const std::string& format, ...);
+
 }
 #endif
 
