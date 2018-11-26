@@ -48,6 +48,44 @@ TEST(Test_get_current_mac_addrs, ShellCmd) {
 #endif
 
 #if 1
+
+TEST(Test_ltrim_inplace, ltrim_inplace) {
+    string expect="abc        def ";
+    string input=string("  ") + expect;
+
+    ASSERT_EQ(expect, ltrim_inplace(input));
+    ASSERT_EQ(expect, input);
+}
+
+TEST(Test_rtrim_inplace, rtrim_inplace) {
+    string expect=" abc        def";
+    string input=expect + string("  ");
+
+    ASSERT_EQ(expect, rtrim_inplace(input));
+    ASSERT_EQ(expect, input);
+}
+
+TEST(Test_lrtrim_inplace, lrtrim_inplace) {
+    string expect="abc        def";
+    string input=string("  ") + expect + string("  ");
+
+    ASSERT_EQ(expect, lrtrim_inplace(input));
+    ASSERT_EQ(expect, input);
+}
+
+TEST(Test_lrtrim, lrtrim) {
+    string expect="abc        def";
+    string input=string("  ") + expect + string("  ");
+    string input_dup=input;
+
+    ASSERT_EQ(expect, lrtrim(input));
+    ASSERT_EQ(input_dup, input);
+}
+
+#endif
+
+#if 1
+
 TEST(Test_split_by_delim, SplitString) {
     vector<string> strs = split_by_delim(":abc::efg:1234 5 ::6", ':');
     for(auto&& s: strs){

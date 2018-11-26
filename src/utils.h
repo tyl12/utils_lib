@@ -31,14 +31,17 @@ using namespace std;
 
 namespace utils{
 
-#define LOGD(fmt, ...)  do{ printf("%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
-#define LOGE(fmt, ...)  do{ printf("%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
+//static bool gDebugUtils=false;
+static bool gDebugUtils=true;
+
+#define LOGD(fmt, ...)  do{ printf("%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
+#define LOGE(fmt, ...)  do{ printf("%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
 
 //#define LOGD(fmt, ...)  do{ printf("DEBUG: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
 //#define LOGE(fmt, ...)  do{ printf("ERROR: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
 
-#define LOGD2(fmt, args...) fprintf (stdout, "%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__,args)
-#define LOGE2(fmt, args...) fprintf (stderr, "%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __FUNCTION__,__LINE__,args)
+#define LOGD2(fmt, args...) fprintf (stdout, "%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__,args)
+#define LOGE2(fmt, args...) fprintf (stderr, "%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__,args)
 
 template<typename ... Args>
 string string_format( const std::string& format, Args ... args )
@@ -56,6 +59,7 @@ string string_format( const std::string& format, Args ... args )
         snprintf( buf.get(), size, format, args); \
         string( buf.get(), buf.get() + size - 1 );\
     })
+
 
 /*
  * 删除字符串头尾的空格字符,
@@ -89,7 +93,8 @@ string getLoginUser();
 string get_ts(void);
 
 int64_t get_time_ms();
-string get_date_sec();
+string get_date_str_sec();
+std::string get_date_str_sec_from_time(time_t t);
 
 int redirect_stdout_stderr(const char* fname);
 int restore_stdout();
@@ -98,6 +103,88 @@ int exec_popen(const char* cmd);
 int exec_shell_script(const char* script_dir, const char* script_file);
 
 string format_string(const std::string& format, ...);
+
+//
+class Marker
+{
+    private:
+        function<void(void)> mFunc;
+
+    public:
+        Marker(function<void(void)>&& begin, function<void(void)>&& end):
+            mFunc(move(end))
+        {
+            if (gDebugUtils)
+                begin();
+        }
+        Marker(function<void(void)>&& end):
+            mFunc(move(end))
+        { }
+
+        virtual ~Marker(){
+            if (gDebugUtils)
+                if (mFunc)
+                    mFunc();
+        }
+};
+
+//
+class Perf
+{
+    private:
+        bool over;
+        string sTag;
+        int64_t startTime;
+        Perf(const Perf&) {}
+    public:
+        Perf() = default;
+
+        Perf(string tag)
+        {
+            over = false;
+            sTag = tag;
+            startTime = get_time_ms();
+            LOGD("[PERF]%s: start", sTag.c_str());
+        }
+        void start(string tag)
+        {
+            over = false;
+            sTag = tag;
+            startTime = get_time_ms();
+            LOGD("[PERF]%s: start", sTag.c_str());
+        }
+
+        virtual ~Perf()
+        {
+            if (!over)
+            {
+                done();
+            }
+        }
+
+        void reset()
+        {
+            startTime = get_time_ms();
+            over = false;
+            LOGD("[PERF]%s: restart", sTag.c_str());
+        }
+
+        void done()
+        {
+            if (!over)
+            {
+                auto end = get_time_ms();
+                LOGD("[PERF]%s: done, cost %.2f sec", sTag.c_str(), (end - startTime) / 1000.0);
+                over = true;
+            }
+            else
+            {
+                LOGD("[PERF]%s: already done", sTag.c_str());
+            }
+        }
+};
+
+
 
 }
 #endif
