@@ -496,7 +496,7 @@ bool startsWith(const string& s, const string& sub){
 #endif
 }
 
-int endsWith(const string& s, const string& sub){
+bool endsWith(const string& s, const string& sub){
 #if 0
     return s.rfind(sub)==(s.length()-sub.length())?true:false;
 #else
@@ -506,6 +506,23 @@ int endsWith(const string& s, const string& sub){
         return true;
     return false;
 #endif
+}
+bool startsWithIgnoreCase(const string& s, const string& sub){
+    if (s.size() < sub.size())
+        return false;
+
+    auto it = search(s.begin(), s.begin()+sub.size() + 1, sub.begin(), sub.end(),
+                     [](char c1, char c2){ return std::tolower(c1) == std::tolower(c2);});
+    return (distance(s.begin(), it) == 0);
+}
+
+bool endsWithIgnoreCase(const string& s, const string& sub){
+    if (s.size() < sub.size())
+        return false;
+
+    auto it = search(s.begin() + (s.size() - sub.size()), s.end(), sub.begin(), sub.end(),
+                     [](char c1, char c2){ return std::tolower(c1) == std::tolower(c2);});
+    return (distance(s.begin() +(s.size() - sub.size()), it) == 0);
 }
 
 vector<string> get_file_list(const char* filedir, const char* str_start=NULL, const char* str_end=NULL)

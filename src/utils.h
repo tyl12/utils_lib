@@ -61,11 +61,18 @@ string string_format( const std::string& format, Args ... args )
     })
 
 
+bool startsWith(const string& s, const string& sub);
+bool endsWith(const string& s, const string& sub);
+
+bool startsWithIgnoreCase(const string& s, const string& sub);
+bool endsWithIgnoreCase(const string& s, const string& sub);
 /*
  * 删除字符串头尾的空格字符,
  * input: inplace 操作，会改变输入字符串,
  * output: 输入字符串经过trim操作之后的结果字符串的引用
  */
+
+
 string& ltrim_inplace(string &s);
 string& rtrim_inplace(string &s);
 string& lrtrim_inplace(string &s);

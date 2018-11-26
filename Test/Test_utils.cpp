@@ -49,6 +49,69 @@ TEST(Test_get_current_mac_addrs, ShellCmd) {
 
 #if 1
 
+TEST(Test_startsWith, startsWith) {
+    string a="123456789";
+    string b="12345";
+    ASSERT_EQ(true, startsWith(a, b));
+    ASSERT_EQ(false, startsWith(b, a));
+
+    a="123456789";
+    b="abc";
+    ASSERT_EQ(false, startsWith(a, b));
+    ASSERT_EQ(false, startsWith(b, a));
+
+    a="12345";
+    b=a;
+    ASSERT_EQ(true, startsWith(a, b));
+}
+
+TEST(Test_endsWith, endsWith) {
+    string a="123456789";
+    string b="789";
+    ASSERT_EQ(true, endsWith(a, b));
+    ASSERT_EQ(false, endsWith(b, a));
+
+    a="123";
+    b="12345";
+    ASSERT_EQ(false, endsWith(a, b));
+
+    a="12345";
+    b=a;
+    ASSERT_EQ(true, endsWith(a, b));
+}
+
+TEST(Test_startsWithIgnoreCase, startsWithIgnoreCase) {
+    string a="AbCdef";
+    string b="ABcD";
+    ASSERT_EQ(true, startsWithIgnoreCase(a, b));
+    ASSERT_EQ(false, startsWithIgnoreCase(b, a));
+
+    a="abcDef";
+    b="abcefg";
+    ASSERT_EQ(false, startsWithIgnoreCase(a, b));
+    ASSERT_EQ(false, startsWithIgnoreCase(b, a));
+
+    a="abcDef";
+    b=a;
+    ASSERT_EQ(true, startsWithIgnoreCase(a, b));
+}
+
+TEST(Test_endsWithIgnoreCase, endsWithIgnoreCase) {
+    string a="AbCdEf";
+    string b="cdeF";
+    ASSERT_EQ(true, endsWithIgnoreCase(a, b));
+    ASSERT_EQ(false, endsWithIgnoreCase(b, a));
+
+    a="abcDef";
+    b="abcdEF";
+    ASSERT_EQ(true, endsWithIgnoreCase(a, b));
+
+    a="abCdef";
+    b=a;
+    ASSERT_EQ(true, endsWithIgnoreCase(a, b));
+}
+
+
 TEST(Test_ltrim_inplace, ltrim_inplace) {
     string expect="abc        def ";
     string input=string("  ") + expect;
