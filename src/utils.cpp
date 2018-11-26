@@ -62,10 +62,10 @@ int wait_for_network_block(){
         int ret2 = system(cmd2.c_str());
 
         if (ret1 == 0 || ret2 == 1){
-            cout<<__FUNCTION__<<" ping success"<<endl;
+            LOGD("ping success");
             return 0;
         }
-        cout<<__FUNCTION__<<" ping failed, retry"<<endl;
+        LOGE("ping failed. retry");
         usleep(5*1000*1000);
     }
     return -1;
@@ -237,12 +237,12 @@ string lrtrim(const string& s)
 #endif
 
 vector<string> split_by_delim(const string& line, const char ch){
-    if (gDebugUtils) LOGD("input: %s\n", line.c_str());
+    if (gDebugUtils) LOGD("input:[%s]", line.c_str());
     vector<string> output;
     string val;
     std::istringstream tokenStream(line);
     while (getline(tokenStream, val, ch)){
-        if (gDebugUtils) LOGD("split: %s\n", val.c_str());
+        if (gDebugUtils) LOGD("split:[%s]", val.c_str());
         output.push_back(val);
     }
     return output;
@@ -276,7 +276,7 @@ vector<string> split_by_delims(const string& str, const string& delims){
 
 //c11
 vector<string> split_by_regex_iterator(const string& s, const regex& pattern){
-    if (gDebugUtils) LOGD("input: %s\n", s.c_str());
+    if (gDebugUtils) LOGD("input:[%s]", s.c_str());
     vector<string> output;
 
     auto begin = sregex_iterator(s.begin(), s.end(), pattern);
@@ -287,7 +287,7 @@ vector<string> split_by_regex_iterator(const string& s, const regex& pattern){
 }
 
 vector<string> split_by_regex_search(const string& str, const regex& pattern){
-    if (gDebugUtils) LOGD("input: %s\n", str.c_str());
+    if (gDebugUtils) LOGD("input:[%s]", str.c_str());
     vector<string> output;
     smatch result;
     string s = str;
@@ -322,7 +322,7 @@ Returns a newly constructed string object with its value initialized to a copy o
 The substring is the portion of the object that starts at character position pos and spans len characters (or until the end of the string, whichever comes first).
 */
 vector<string> split_by_find(const string& s, const string& delims){
-    if (gDebugUtils) LOGD("input:%s\n", s.c_str());
+    if (gDebugUtils) LOGD("input:[%s]", s.c_str());
     vector<string> output;
     string val;
 
@@ -355,7 +355,7 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
     string result;
     char val[1024] = {0};
 
-    if (gDebugUtils) LOGD("%s: cmd: %s\n", __FUNCTION__, cmd_in);
+    if (gDebugUtils) LOGD("cmd:[%s]", cmd_in);
     /*
     string cmd = string("bash -c \"") + cmd_in + "\"";
     if (0 == (fpipe = (FILE*)popen(cmd.c_str(), "r"))) {
@@ -374,7 +374,7 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
      */
     while (fgets(val, sizeof(val)-1,fpipe) != nullptr) {
         if (val[strlen(val)-1] == '\n'){
-            if (gDebugUtils) LOGD("%s: %s\n", __FUNCTION__, val);
+            if (gDebugUtils) LOGD("[%s]", val);
             result += val;
             result.erase(result.end()-1);//remove tailing '\n'
             lrtrim_inplace(result);
@@ -419,7 +419,7 @@ vector<string> get_file_list(const char* filedir, const char* str_start=NULL, co
 
     shared_ptr<DIR> dir(opendir(filedir), [](DIR* dir){ closedir(dir);});
 
-    LOGD("filelist:\n");
+    LOGD("filelist:");
     while((ptr=readdir(dir.get()))!=NULL)
     {
         //跳过'.'和'..'两个目录
@@ -433,26 +433,25 @@ vector<string> get_file_list(const char* filedir, const char* str_start=NULL, co
         if (str_end != NULL && !endsWith(ptr->d_name, str_end))
             continue;
 
-        LOGD("%s\n",ptr->d_name);
+        LOGD("%s",ptr->d_name);
         result.push_back(string(ptr->d_name));
     }
 
     sort(result.begin(), result.end());
 
-    LOGD("sorted file list:\n");
+    LOGD("sorted file list:");
     int i = 0;
     for (auto s:result){
-        LOGD("%02d:%s\n", i, s.c_str());
+        LOGD("%02d:%s", i, s.c_str());
         i++;
     }
-    LOGD("\n");
     return result;
 }
 
 vector<string> get_current_mac_addrs(){
     vector<string> output;
     if (launch_cmd("ifconfig | grep HWaddr | awk '{print $NF}'", output) != 0){
-        cout<<"Fail to execute "<<__FUNCTION__<<endl;
+        LOGE("Fail to execute %s", __PRETTY_FUNCTION__);
     }
     return output;
     /*
@@ -499,16 +498,16 @@ int check_passwd(const char* name ){
     struct spwd  *sp;
     sp = getspnam(username);
     if(sp == NULL) {
-        LOGD("get spentry error. %s\n", strerror(errno));
+        LOGD("get spentry error. [%s]", strerror(errno));
         return -1;
     }
 
     if(strcmp(sp->sp_pwdp, (char*)crypt(user_passwd, sp->sp_pwdp)) == 0) {
-        LOGD("passwd check success\n");
+        LOGD("passwd check success");
         return 0;
     }
     else {
-        LOGD("passwd check fail\n");
+        LOGD("passwd check fail");
         return -1;
     }
 }
@@ -620,20 +619,20 @@ int restore_stdout(){
 
 int exec_cmd(const char *shell_cmd)
 {
-    LOGD("[thread-id:%zu]exec: \"%s\"\n", pthread_self(), shell_cmd);
+    LOGD("[thread-id:%zu]exec: \"%s\"", pthread_self(), shell_cmd);
     pid_t status = system(shell_cmd);
     if (-1 == status) {
-        LOGD("system error!\n");
+        LOGE("system error!");
         return -1;
     }
-    LOGD("exit status value = [0x%x]\n", status);
-    LOGD("exit status = [%d]\n", WEXITSTATUS(status));
+    LOGD("exit status value = [0x%x]", status);
+    LOGD("exit status = [%d]", WEXITSTATUS(status));
     if (WIFEXITED(status)) {
         if (0 == WEXITSTATUS(status)) {
-            LOGD("run system call <%s> successfully.\n", shell_cmd);
+            LOGD("run system call <%s> successfully.", shell_cmd);
         }
         else {
-            LOGD("run system call <%s> fail, script exit code: %d\n", shell_cmd, WEXITSTATUS(status));
+            LOGD("run system call <%s> fail, script exit code: %d", shell_cmd, WEXITSTATUS(status));
         }
     }
     return WEXITSTATUS(status);
@@ -646,7 +645,7 @@ int exec_popen(const char* cmd) {
     char buffer[BUF_LEN];
     std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
     if (!pipe){
-        LOGD("ERROR! fail to popen %s\n", cmd);
+        LOGD("ERROR! fail to popen %s", cmd);
         throw std::runtime_error("popen() failed!");
     }
     while (!feof(pipe.get())) {
@@ -659,14 +658,14 @@ int exec_popen(const char* cmd) {
 #define SHELL_BIN               ("bash")
 int exec_shell_script(const char* script_dir, const char* script_file){
     string cmd = string(SHELL_BIN) + " " + script_dir + "/" + script_file;
-    LOGD("start to execute: %s\n", script_file);
+    LOGD("start to execute: %s", script_file);
     cmd = cmd + " 2>&1 | sed  's/^/["+ script_file +"] /'";
     int ret = exec_cmd(cmd.c_str());
     if (ret){
-        LOGD("ERROR: execute %s failed. retry\n", script_file);
+        LOGD("ERROR: execute %s failed. retry.", script_file);
         return 1;
     }
-    LOGD("execute %s success. continue\n", script_file);
+    LOGD("execute %s success. continue", script_file);
     return 0;
 }
 
@@ -682,18 +681,18 @@ int wait_system_boot_complete(const vector<string>& mountlist_input){
         });
     }
 
-    LOGD("%s: start to check mount list\n",__FUNCTION__);
+    LOGD("start to check mount list");
     for (const auto& mnt:mountlist){
-        LOGD("%s: check for mount point: %s", __FUNCTION__, mnt.c_str());
+        LOGD("check for mount point: %s", mnt.c_str());
         while(true){
             string cmd="mountpoint -q " + mnt;
-            LOGD("%s: execute cmd: %s\n", __FUNCTION__, cmd.c_str());
+            LOGD("execute cmd: %s", cmd.c_str());
             if (exec_cmd(cmd.c_str()) == 0){
-                LOGD("%s: %s is mounted", __FUNCTION__, mnt.c_str());
+                LOGD("%s is mounted", mnt.c_str());
                 break; //continue to next mnt point
             }
             else{
-                LOGD("%s: %s is NOT mounted, wait", __FUNCTION__, mnt.c_str());
+                LOGD("%s is NOT mounted, wait", mnt.c_str());
                 sleep(10);
                 continue;
             }
