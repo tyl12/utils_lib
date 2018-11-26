@@ -85,8 +85,6 @@ string merge_intvector_to_string_with_traits(vector<int> data);
 int launch_cmd(const char* cmd, vector<string>& output);
 vector<string> get_current_mac_addrs();
 
-bool isDebugEnv();
-
 int check_passwd(const char* name = NULL);
 string getLoginUser();
 
@@ -104,28 +102,15 @@ int exec_shell_script(const char* script_dir, const char* script_file);
 
 string format_string(const std::string& format, ...);
 
-//
 class Marker
 {
     private:
         function<void(void)> mFunc;
 
     public:
-        Marker(function<void(void)>&& begin, function<void(void)>&& end):
-            mFunc(move(end))
-        {
-            if (gDebugUtils)
-                begin();
-        }
-        Marker(function<void(void)>&& end):
-            mFunc(move(end))
-        { }
-
-        virtual ~Marker(){
-            if (gDebugUtils)
-                if (mFunc)
-                    mFunc();
-        }
+        Marker(function<void(void)>&& begin, function<void(void)>&& end);
+        Marker(function<void(void)>&& end);
+        virtual ~Marker();
 };
 
 //
@@ -139,49 +124,11 @@ class Perf
     public:
         Perf() = default;
 
-        Perf(string tag)
-        {
-            over = false;
-            sTag = tag;
-            startTime = get_time_ms();
-            LOGD("[PERF]%s: start", sTag.c_str());
-        }
-        void start(string tag)
-        {
-            over = false;
-            sTag = tag;
-            startTime = get_time_ms();
-            LOGD("[PERF]%s: start", sTag.c_str());
-        }
-
-        virtual ~Perf()
-        {
-            if (!over)
-            {
-                done();
-            }
-        }
-
-        void reset()
-        {
-            startTime = get_time_ms();
-            over = false;
-            LOGD("[PERF]%s: restart", sTag.c_str());
-        }
-
-        void done()
-        {
-            if (!over)
-            {
-                auto end = get_time_ms();
-                LOGD("[PERF]%s: done, cost %.2f sec", sTag.c_str(), (end - startTime) / 1000.0);
-                over = true;
-            }
-            else
-            {
-                LOGD("[PERF]%s: already done", sTag.c_str());
-            }
-        }
+        Perf(string tag);
+        void start(string tag);
+        virtual ~Perf();
+        void reset();
+        void done();
 };
 
 

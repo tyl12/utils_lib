@@ -37,6 +37,101 @@ using namespace std;
 
 namespace utils{
 
+void libutils_init(void) __attribute__((constructor));
+void libutils_fini(void) __attribute__((destructor));
+
+static bool bDebugLibUtils=false;
+
+
+/*
+static const char ENV_DEBUG[]="DEBUG_LIBUTILS";
+
+bool isDebugEnvSet(){
+    const char *debug = getenv(ENV_DEBUG);
+    if (debug == nullptr){
+        cout<<"ENV_DEBUG is not set, assume false"<<endl;
+        return false;
+    }
+    if (strcmp(debug, "true") == 0){
+        return true;
+    }
+    return false;
+}
+*/
+
+/**************************************************************************/
+void libutils_init(void){
+    LOGD("libsutils constructor");
+}
+void libutils_fini(void){
+    LOGD("libsutils destructor");
+}
+
+/**************************************************************************/
+Marker::Marker(function<void(void)>&& begin, function<void(void)>&& end):
+    mFunc(move(end))
+{
+    if (gDebugUtils)
+        begin();
+}
+
+Marker::Marker(function<void(void)>&& end):
+    mFunc(move(end))
+{ }
+
+Marker::~Marker(){
+    if (gDebugUtils)
+        if (mFunc)
+            mFunc();
+}
+
+/**************************************************************************/
+Perf::Perf(string tag)
+{
+    over = false;
+    sTag = tag;
+    startTime = get_time_ms();
+    LOGD("[PERF]%s: start", sTag.c_str());
+}
+void Perf::start(string tag)
+{
+    over = false;
+    sTag = tag;
+    startTime = get_time_ms();
+    LOGD("[PERF]%s: start", sTag.c_str());
+}
+
+Perf::~Perf()
+{
+    if (!over)
+    {
+        done();
+    }
+}
+
+void Perf::reset()
+{
+    startTime = get_time_ms();
+    over = false;
+    LOGD("[PERF]%s: restart", sTag.c_str());
+}
+
+void Perf::done()
+{
+    if (!over)
+    {
+        auto end = get_time_ms();
+        LOGD("[PERF]%s: done, cost %.2f sec", sTag.c_str(), (end - startTime) / 1000.0);
+        over = true;
+    }
+    else
+    {
+        LOGD("[PERF]%s: already done", sTag.c_str());
+    }
+}
+/**************************************************************************/
+
+//
 string merge_intvector_to_string_with_traits(vector<int> data){
     std::ostringstream vts;
 
@@ -376,6 +471,7 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
         if (val[strlen(val)-1] == '\n'){
             if (gDebugUtils) LOGD("[%s]", val);
             result += val;
+            //result[result.size()-1]='\0';//tony:wrong!
             result.erase(result.end()-1);//remove tailing '\n'
             lrtrim_inplace(result);
             if (!result.empty())
@@ -465,19 +561,6 @@ vector<string> get_current_mac_addrs(){
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
     */
-}
-
-static const char ENV_DEBUG[]="DEBUG";
-bool isDebugEnv(){
-    const char *debug = getenv(ENV_DEBUG);
-    if (debug == nullptr){
-        cout<<"ENV_DEBUG is not set, assume false"<<endl;
-        return false;
-    }
-    if (strcmp(debug, "true") == 0){
-        return true;
-    }
-    return false;
 }
 
 #include <stdio.h>
