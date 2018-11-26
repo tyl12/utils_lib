@@ -445,6 +445,7 @@ vector<string> split_by_find(const string& s, const string& delims){
 }
 
 
+//execute the cmd in subprocess in sync mode and read the stdout
 int launch_cmd(const char* cmd_in, vector<string>& output){
     FILE *fpipe;
     string result;
@@ -467,19 +468,21 @@ int launch_cmd(const char* cmd_in, vector<string>& output){
      * function and included in the string copied to str.
      * A terminating null character is automatically appended after the characters copied to str.
      */
-    while (fgets(val, sizeof(val)-1,fpipe) != nullptr) {
-        if (val[strlen(val)-1] == '\n'){
-            if (gDebugUtils) LOGD("[%s]", val);
+    while (!feof(fpipe)) {
+        if (fgets(val, sizeof(val)-1,fpipe) != nullptr) {
+            if (val[strlen(val)-1] == '\n'){
+                if (gDebugUtils) LOGD("[%s]", val);
+                result += val;
+                //result[result.size()-1]='\0';//tony:wrong!
+                result.erase(result.end()-1);//remove tailing '\n'
+                lrtrim_inplace(result);
+                if (!result.empty())
+                    output.push_back(move(result));
+                result.clear();
+                continue;
+            }
             result += val;
-            //result[result.size()-1]='\0';//tony:wrong!
-            result.erase(result.end()-1);//remove tailing '\n'
-            lrtrim_inplace(result);
-            if (!result.empty())
-                output.push_back(move(result));
-            result.clear();
-            continue;
         }
-        result += val;
     }
     pclose(fpipe);
 
@@ -736,23 +739,6 @@ int exec_cmd(const char *shell_cmd)
         }
     }
     return WEXITSTATUS(status);
-}
-
-//execute the cmd in subprocess in sync mode and read the stdout
-#define BUF_LEN (256)
-int exec_popen(const char* cmd) {
-
-    char buffer[BUF_LEN];
-    std::shared_ptr<FILE> pipe(popen(cmd, "r"), pclose);
-    if (!pipe){
-        LOGD("ERROR! fail to popen %s", cmd);
-        throw std::runtime_error("popen() failed!");
-    }
-    while (!feof(pipe.get())) {
-        if (fgets(buffer, BUF_LEN, pipe.get()) != nullptr)
-            LOGD("%s",buffer);
-    }
-    return 0;
 }
 
 #define SHELL_BIN               ("bash")
