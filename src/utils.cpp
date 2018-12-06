@@ -493,8 +493,10 @@ bool startsWith(const string& s, const string& sub){
 #if 0
     return s.find(sub)==0?true:false;
 #else
-    if (strncmp(s.c_str(), sub.c_str(), sub.size()) == 0)
+    if (s.size() >= sub.size() &&
+        strncmp(s.c_str(), sub.c_str(), sub.size()) == 0){
         return true;
+    }
     return false;
 #endif
 }
@@ -503,10 +505,10 @@ bool endsWith(const string& s, const string& sub){
 #if 0
     return s.rfind(sub)==(s.length()-sub.length())?true:false;
 #else
-    if (s.size() < sub.size())
-        return false;
-    if (strncmp(s.c_str() + (s.size()-sub.size()), sub.c_str(), sub.size()) == 0)
+    if (s.size() >= sub.size() &&
+        strncmp(s.c_str() + (s.size() - sub.size()), sub.c_str(), sub.size()) == 0){
         return true;
+    }
     return false;
 #endif
 }
