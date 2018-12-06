@@ -1,0 +1,160 @@
+#include <iostream>
+#include <functional>
+#include <tuple>
+#include <memory>
+
+using namespace std;
+
+namespace utils{
+    int a;
+    int b;
+}
+namespace utils{
+    int c;
+    int d;
+
+class A
+{
+    public:
+        int a=1;
+        int b=2;
+
+        int func(){
+#if 1
+            function<int()> ptrf = [&, this]()->int{
+            //function<int()> ptrf = [&, a]()->int{
+                int s=a+b;
+                return s;
+            };
+#else
+            function<int()> ptrf = [=](){
+                int s=a+b;
+                return s;
+            };
+#endif
+            int m = ptrf();
+            return m;
+        }
+
+
+};
+
+int s(A* a){
+    return a->a*9;
+}
+
+
+class B
+{
+    public:
+    B(){ cout<<"B()"<<endl; }
+
+    B(const B&){ cout<<"B(const B&)"<<endl; }
+
+    B(B&){ cout<<"B(B&)"<<endl; }
+
+    B(B&&){ cout<<"B(B&&)"<<endl; }
+
+    B& operator=(B& b){ cout<<"B& operator=(B&)"<<endl; return *this; }
+
+    B& operator=(B&& b){ cout<<"B& operator=(B&&)"<<endl; return *this; }
+
+    virtual ~B(){ cout<<"~B()"<<endl; }
+};
+
+B getB(){
+    cout<<"getB E"<<endl;
+    return B();
+}
+
+
+template<typename T>
+void PrintT(T& t)
+{ cout<<"T&, lvalue"<<endl; }
+
+template<typename T>
+void PrintT(T&& t)
+{ cout<<"T&&, rvalue"<<endl; }
+
+template<typename T>
+void TestForward(T&& v)
+{
+    PrintT(v);
+    PrintT(forward<T>(v));
+    PrintT(move(v));
+}
+
+template<typename T>
+unique_ptr<T> return_unique()
+{
+    unique_ptr<T> t(new T());
+    return t;
+}
+}
+
+using namespace utils;
+int main()
+{
+    /*
+    TestForward(1);
+    int x = 1;
+    TestForward(x);
+    TestForward(forward<int>(x));
+    */
+
+    /*
+    unique_ptr<A> a(return_unique<A>());
+    cout<<a->func()<<endl;
+    */
+
+
+
+//    utils::B c=utils::getB();
+
+
+    unique_ptr<int> p3 = make_unique<int>(1);
+
+
+
+//    unique_ptr<int[]> p8(new int[30]);
+//    unique_ptr<int, void(*)(int*)> p4(new int[30], [](int* p){ delete []p;});
+//    unique_ptr<int, function<void(int*)>> p5(new int[30], [](int* p){ delete []p;});
+
+
+    /*
+    shared_ptr<B> p0(new B[10]);//leak
+    shared_ptr<B> p1(new B[10], [](B* p){ delete []p;});//ok
+
+    unique_ptr<B[]> p9(new B[10]);//ok, prefer
+    unique_ptr<B[], void(*)(B*)> p8(new B[10], [](B* p){ delete []p;});//ok
+    unique_ptr<B, void(*)(B*)> p8(new B[10], [](B* p){ delete []p;});//ok
+
+    std::unique_ptr<std::FILE, void (*)(std::FILE*) > fp(std::fopen("demo.txt", "r"), [](std::FILE* f){fclose(f);});
+    */
+
+    return 0;
+#if 0
+    A a;
+    cout<<a.func()<<endl;
+
+    auto m1 = &A::func;
+    cout<<(a.*m1)()<<endl;
+
+
+    int x1;
+    char x2;
+    int x3;
+    tuple<int*, char*, int> t = make_tuple(&x1, &x2, x3);
+
+    int* t1;
+    char* t2;
+    int t3;
+    auto s = tie(t1, t2, t3);
+    tie(t1, t2, t3) = t;
+    tie(ignore, ignore, t3) = t;
+
+    cout<<get<1>(s)<<endl;
+
+    return 0;
+#endif
+}

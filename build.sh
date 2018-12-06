@@ -1,10 +1,7 @@
-rm -rf build
-rm -rf Test/build
 
 (
 set -e
-mkdir build
-cd build
+cd utils && rm -rf build/ && mkdir -p build && cd build
 cmake ..
 make
 make install
@@ -12,11 +9,11 @@ make install
 
 (
 set -e
-cd Test
-mkdir build
-cd build
-cmake ..
+cd GTest && rm -rf build/ && mkdir build && cd build
+cmake .. -DUTILS_PATH=`pwd`/../../utils/build/install
 make
-./runTests
+for f in test* ; do
+    ./${f}
+done
 )
 

@@ -1,0 +1,126 @@
+// regex_match example
+#include <iostream>
+#include <string>
+#include <regex>
+
+using namespace std;
+int main ()
+{
+
+    string s = "subject12345";
+#if 0
+    if (regex_match (s, regex("(sub)(.*)") ))
+        cout << "string literal matched\n";
+
+    regex e ("(sub)(.*)123(.*)");
+    if (regex_match (s,e))
+        cout << "string object matched\n";
+
+    if ( regex_match ( s.begin(), s.end(), e ) )
+        cout << "range matched\n";
+
+    cmatch cm;    // same as match_results<const char*> cm;
+    regex_match (s.c_str(),cm,e);
+    cout << "string literal with " << cm.size() << " matches\n";
+
+    smatch sm;    // same as match_results<string::const_iterator> sm;
+    regex_match (s,sm,e);
+    cout << "string object with " << sm.size() << " matches\n";
+
+    regex_match ( s.cbegin(), s.cend(), sm, e);
+    cout << "range with " << sm.size() << " matches\n";
+
+    // using explicit flags:
+    regex_match  (s.c_str(), cm, e, regex_constants::match_default );
+
+    cout << "the matches were: ";
+    for (unsigned i=0; i<sm.size(); ++i) {
+        cout << "[" << sm[i] << "] ";
+    }
+    cout << endl;
+
+    s="word1 , word2 ,12345, a.b,";
+    regex h("(([\\s]*([^,\\s]*)[\\s]*),)+");
+    regex_match(s, sm, h);
+    for (auto i=0; i <sm.size(); i++){
+        cout<<"[" << sm[i] << "] ";
+    }
+    cout<<endl;
+#endif
+#if 0
+    s="testtest";
+    smatch sk;
+    regex ht("(test)test");
+    auto mt = regex_match(s, sk, ht);
+    cout<<"resultmt="<<mt<<endl;
+    for (auto i=0; i <sk.size(); i++){
+        cout<<"[" << sk[i] << "] ";
+    }
+    cout<<endl;
+    cout<<endl;
+#endif
+    //s="Testtest 12345,  abcde, , a ,, b,";
+    s="Testtest 12345,  abcde, , a ,, b, c,  ";
+    cout<<"source = " << s <<endl;
+    smatch sk;
+    //regex ht("([^,]*),|([^,]+)$", std::regex_constants::icase);
+    //regex ht("([^,]+)$|([^,]*),", std::regex_constants::icase);
+    regex ht("(([^,]+)$|([^,]*),)", std::regex_constants::icase);
+    //auto mt = regex_search(s, sk, ht);
+    //while( !s.empty() && regex_search(s, sk, ht)){
+    while( regex_search(s, sk, ht)){
+        cout<<"[" << sk[1] << "] "<<endl;;
+        for (unsigned int i=0; i <sk.size(); i++){
+            cout<<"--->"<<i<<"[" << sk[i] << "]"<<endl;
+        }
+        s=sk.suffix();
+        cout<<"suffix=[" << s<<"]"<<endl;
+    }
+    cout<<endl;
+
+#if 0
+    string str = "test1 , test2, test3  , test4";
+    //regex hp("[\\s]*(.*)[\\s]*[,]?");
+    regex hp("([^\\s]*)\\s+");
+    smatch result;
+
+    string::const_iterator iterStart = str.begin();
+    string::const_iterator iterEnd = str.end();
+    string temp;
+    while (regex_search(iterStart, iterEnd, result, hp))
+    {
+
+        /*
+        temp = result[0];
+        cout << temp << " ";
+        iterStart = result[0].second;   //更新搜索起始位置,搜索剩下的字符串
+        */
+        ;
+    }
+#endif
+#if 0
+    /*
+    string str = "test1 , test2, test3  , test4, test5,test6,,,test7";
+    regex hp("([^\\s,]+)\\s*,?");
+    */
+    string str = "test0, test1 , test2, test3  , test4, test5,test6, , ,test9";
+    regex hp("([^,]*),");
+    smatch result;
+    cout<<"source str:"<<str<<endl;
+    int i = 0;
+    while (regex_search(str, result, hp)){
+        cout<<"------------index = "<< i <<endl;
+        if (result.ready()){
+            cout<<"prefix=["<<result.prefix()<<"]"<<endl;
+            cout<<"suffix=["<<result.suffix()<<"]"<<endl;
+            //for (auto x:result){
+            //    cout<<x<<endl;
+            //}
+            cout<<"result=["<<result[1]<<"]"<<endl;
+            str = result.suffix();
+            i++;
+        }
+    }
+#endif
+    return 0;
+}

@@ -1,0 +1,198 @@
+#include <sstream>
+
+
+//============================================================================
+// Name        : main.cpp
+// Author      : Jing
+// Version     :
+// Copyright   : Jing
+// Description : Hello World in C++, Ansi-style
+//============================================================================
+
+#include <string.h>
+#include <string>
+#include <stdio.h>
+#include <iostream>
+#include <stdarg.h>
+#include <memory>
+
+using namespace std;
+
+template<typename _CharT, typename _Traits, typename _Alloc>
+class SString: public basic_string<_CharT, _Traits, _Alloc>
+{
+public:
+	typedef typename _Alloc::template rebind<_CharT>::other _CharT_alloc_type;
+
+	typedef typename _CharT_alloc_type::size_type size_type;
+
+	static const size_type npos = static_cast<size_type> (-1);
+
+
+	inline SString() :
+		basic_string<_CharT, _Traits, _Alloc> ()
+	{
+	}
+	explicit SString(const _Alloc& __a) :
+		basic_string<_CharT, _Traits, _Alloc> ()
+	{
+	}
+
+	SString(const SString& __str) :
+		basic_string<_CharT, _Traits, _Alloc> (__str)
+	{
+	}
+
+	SString(const SString& __str, size_type __pos, size_type __n = npos) :
+		basic_string<_CharT, _Traits, _Alloc> (__str, __pos, npos)
+	{
+	}
+
+	SString(const SString& __str, size_type __pos, size_type __n,
+			const _Alloc& __a) :
+		basic_string<_CharT, _Traits, _Alloc> (__str, __pos, __n, __a)
+	{
+	}
+
+	SString(const _CharT* __s, size_type __n, const _Alloc& __a = _Alloc()) :
+		basic_string<_CharT, _Traits, _Alloc> (__s, __n, __a)
+	{
+	}
+
+	SString(const _CharT* __s, const _Alloc& __a = _Alloc()) :
+		basic_string<_CharT, _Traits, _Alloc> (__s, __a)
+	{
+	}
+
+	SString(size_type __n, _CharT __c, const _Alloc& __a = _Alloc()) :
+		basic_string<_CharT, _Traits, _Alloc> (__n, __c, __a)
+	{
+	}
+
+	template<class _InputIterator>
+	SString(_InputIterator __beg, _InputIterator __end, const _Alloc& __a =
+			_Alloc()) :
+		basic_string<_CharT, _Traits, _Alloc> (__beg, __end, __a)
+	{
+	}
+
+	SString& operator=(const SString& __str)
+	{
+		return this->assign(__str);
+	}
+
+	SString& operator=(const _CharT* __s)
+	{
+		return this->assign(__s);
+	}
+
+	SString& operator=(_CharT __c)
+	{
+		this->assign(1, __c);
+		return *this;
+	}
+
+    /*
+    std::string format(const char *fmt,.. .)
+    {
+        va_list ap;
+        va_start(ap, fmt);
+        const size_t SIZE = 512;
+        char buffer[SIZE] = { 0 };
+        vsnprintf(buffer, SIZE, fmt, ap);
+        va_end(ap);
+        return std::string(buffer);
+    }
+    */
+
+	inline SString &Format(const char *_format, ...)
+	{
+		char szBuffer[1000];
+	    memset((void*)szBuffer,0, sizeof(szBuffer));
+
+		va_list ap;
+		va_start(ap, _format);
+
+		try
+		{
+			vsnprintf(szBuffer, 1000, _format, ap);
+		} catch (...)
+		{
+			cout << "ERROR: format the string failed..." << endl;
+			return *this;
+		}
+
+		va_end(ap);
+		this->append(szBuffer);
+		return *this;
+	}
+
+};
+typedef SString<char, char_traits<char> , allocator<char> > CString;
+
+
+/*
+#define string_formats( format,  ...  ) \
+    do{\
+        size_t size = snprintf( nullptr, 0, format, ##__VA_ARGS__ ) + 1; \
+        std::unique_ptr<char[]> buf( new char[ size ] ); \
+        snprintf( buf.get(), size, format.c_str(), ##__VA_ARGS__ ); \
+        return string( buf.get(), buf.get() + size - 1 ); \
+    } while(0)
+    */
+
+
+#define eprintf(format, ...) fprintf (stderr, format, ##__VA_ARGS__)
+
+#define eprintf2(format, args...) fprintf (stderr, format, args)
+
+#define eprintf3(format, args...) fprintf (stderr, "%s:%d:" format, __FUNCTION__,__LINE__,args)
+
+
+
+int main()
+{
+    string_format("12345%s\n", "test");
+    string y = string_formats2("sasdf%s %d\n", "12345", 45);
+    cout<<y<<endl;
+
+    eprintf3("1234qwer %s%d\n", "2345", 56);
+
+    cout<<"safd " "sdw" <<endl;
+    cout<<"safd ""sdw" <<endl;
+    std::stringstream ss;
+
+    ss << 1234<< "wishchin" << 5678<<endl;
+
+    std::string  str = ss.str();
+
+    printf("%*s\n",25, "sdf");
+    printf("%*s\n", '@', "sdf");
+    printf("%*s\n", 30, "sdf");
+    printf("%*s\n", 20, "sdf");
+    printf("%*s\n", 10, "sdf");
+    printf("%10.10sTest\n", "sdf");
+    return 0;
+    printf("%10d , %20f , %9s\n", 234, 3.4, "qwer");
+    printf("%10d , %20f , %9s\n", 234634, 3.4, "q9021wer");
+    printf("%-10d , %-20f , %-9s\n", 234, 3.4, "qwer");
+
+
+    string m=string_format("asdfas %30s, %05d ,%30.9f ,%c ,%20s", "mmmm", 333, 4.5, 'c', "sdfs");
+    cout<<m<<endl;
+    m=string_format("asdfas %30s, %05d ,%30.9f ,%c ,%20s", "mmasdfasdmm", 323433, 24.51111, 'c', "s909088sddfs");
+    cout<<m<<endl;
+
+	CString s("a");
+	CString s1 = s.Format("abc%d", 1);
+	CString sp = s.Format("abc%d,%c,%f,%s", 1, '2', 345.6, "asdfaswf98");
+	CString s4 = s;
+	CString s2(s1);
+	CString s3(s1.begin(), s1.end());
+	cout << s3.c_str() << endl;
+
+    cout<< s1<<endl;
+    cout<< sp<<endl;
+
+    return 0;
+}
