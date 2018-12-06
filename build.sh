@@ -17,3 +17,12 @@ for f in test* ; do
 done
 )
 
+(
+set -e
+cd DesignPattern && rm -rf build/ && mkdir build && cd build
+cmake ..
+make
+for f in test* ; do
+    ./${f}
+done
+)
