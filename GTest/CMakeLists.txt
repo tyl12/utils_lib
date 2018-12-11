@@ -4,7 +4,7 @@ set (CMAKE_CXX_STANDARD 11)
 set (SRC_FILES ./Test_utils.cpp)
 
 # use:  cmake .. -DUTILS_PATH=`pwd`/../../utils/build/install
-option(UTILS_PATH "specify libutils.so path" "../utils/build/install")
+option(UTILS_PATH "specify libutils.so path" "../../utils/build/install")
 message("option is ${UTILS_PATH}")
 if(UTILS_PATH)
     message("use defined UTILS_PATH: ${UTILS_PATH}")
@@ -40,3 +40,12 @@ link_libraries(pthread utils boost_system  boost_thread)
 add_executable(testThreadPool  ${SRC_FILES})
 target_link_libraries(testThreadPool pthread crypt utils)
 
+#-------------------------------------------------------
+set (SRC_FILES ./Test_SyncQueue.cpp)
+
+include_directories(${UTILS_PATH})
+link_directories(${UTILS_PATH})
+link_libraries(pthread utils boost_system  boost_thread)
+
+add_executable(testSyncQueue ${SRC_FILES})
+target_link_libraries(testSyncQueue pthread crypt utils)

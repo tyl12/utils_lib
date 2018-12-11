@@ -984,6 +984,42 @@ TEST(Test_STLAlgo, Algo)
         std::cout << '\n';
 
     }
+    //remove_if
+    {
+        cout<<"vector remove_if"<<endl;
+        vector<int> myints {1,2,3,4,5,6,7,8,9};
+        auto b = myints.begin();
+        auto e = myints.end();
+
+        auto last = std::remove_if (b, e, [](int v){return (v%2) == 1;});   // 2 4 6 8 1 3 5 7 9
+                                                                                    // ^       ^
+
+        std::cout << "the range after remove_if:";
+        ASSERT_EQ( myints.size(), 9);
+        for (auto i:myints){
+            std::cout<< ' ' << i;
+        }
+        std::cout << "the range remain:";
+        for (auto it = b; it!=last; ++it){
+            std::cout << ' ' << *it;
+            std::cout << '\n';
+        }
+
+        myints.erase(last, e);
+
+        std::cout << "the range remain:";
+        ASSERT_EQ( myints.size(), 4);
+        for (auto i:myints){
+            std::cout<< ' ' << i;
+        }
+
+        ASSERT_EQ( myints[0], 2);
+        ASSERT_EQ( myints[1], 4);
+        ASSERT_EQ( myints[2], 6);
+        ASSERT_EQ( myints[3], 8);
+
+        std::cout<<endl;
+    }
     //remove_copy
     {
         int myints[] = {10,20,30,30,20,10,10,20};               // 10 20 30 30 20 10 10 20

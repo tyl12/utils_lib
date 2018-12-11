@@ -139,6 +139,11 @@ class Perf
 };
 
 
+//utils class used to identify object type
+template<typename T>
+class VersionError;
+//usage: VersionError<decltype(m)> a;
+
 
 }
 #endif
