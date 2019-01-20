@@ -49,3 +49,13 @@ link_libraries(pthread utils boost_system  boost_thread)
 
 add_executable(testSyncQueue ${SRC_FILES})
 target_link_libraries(testSyncQueue pthread crypt utils)
+
+#-------------------------------------------------------
+set (SRC_FILES ./Test_ScopeGuard.cpp)
+
+include_directories(${UTILS_PATH})
+link_directories(${UTILS_PATH})
+link_libraries(pthread utils boost_system  boost_thread)
+
+add_executable(testScopeGuard ${SRC_FILES})
+target_link_libraries(testScopeGuard utils)
