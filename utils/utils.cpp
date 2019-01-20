@@ -86,50 +86,6 @@ Marker::~Marker(){
 }
 
 /**************************************************************************/
-Perf::Perf(string tag)
-{
-    over = false;
-    sTag = tag;
-    startTime = get_time_ms();
-    LOGD("[PERF]%s: start", sTag.c_str());
-}
-void Perf::start(string tag)
-{
-    over = false;
-    sTag = tag;
-    startTime = get_time_ms();
-    LOGD("[PERF]%s: start", sTag.c_str());
-}
-
-Perf::~Perf()
-{
-    if (!over)
-    {
-        done();
-    }
-}
-
-void Perf::reset()
-{
-    startTime = get_time_ms();
-    over = false;
-    LOGD("[PERF]%s: restart", sTag.c_str());
-}
-
-void Perf::done()
-{
-    if (!over)
-    {
-        auto end = get_time_ms();
-        LOGD("[PERF]%s: done, cost %.2f sec", sTag.c_str(), (end - startTime) / 1000.0);
-        over = true;
-    }
-    else
-    {
-        LOGD("[PERF]%s: already done", sTag.c_str());
-    }
-}
-/**************************************************************************/
 
 //
 string merge_intvector_to_string_with_traits(vector<int> data){

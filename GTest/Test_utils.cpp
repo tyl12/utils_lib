@@ -1,6 +1,6 @@
 #include "utils.h"
 #include "UtilSingleton.h"
-#include "perf.h"
+#include "Perf.h"
 #include <gtest/gtest.h>
 
 using namespace utils;
@@ -427,11 +427,11 @@ TEST(Test_UtilSingleton, Singletone) {
 }
 
 TEST(Test_perf, Perf) {
-    perf p("perfname");
+    Perf p("perfname");
     this_thread::sleep_for(std::chrono::seconds(2));
     p.done();
 
-    perf m("perfSelfDestroy");
+    Perf m("perfSelfDestroy");
     this_thread::sleep_for(std::chrono::seconds(2));
 }
 #endif

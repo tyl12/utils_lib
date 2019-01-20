@@ -120,24 +120,6 @@ class Marker
         virtual ~Marker();
 };
 
-//
-class Perf
-{
-    private:
-        bool over;
-        string sTag;
-        int64_t startTime;
-        Perf(const Perf&) {}
-    public:
-        Perf() = default;
-
-        Perf(string tag);
-        void start(string tag);
-        virtual ~Perf();
-        void reset();
-        void done();
-};
-
 
 //utils class used to identify object type
 template<typename T>
