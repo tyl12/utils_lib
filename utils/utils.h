@@ -109,18 +109,6 @@ int exec_shell_script(const char* script_dir, const char* script_file);
 
 string format_string(const std::string& format, ...);
 
-class Marker
-{
-    private:
-        function<void(void)> mFunc;
-
-    public:
-        Marker(function<void(void)>&& begin, function<void(void)>&& end);
-        Marker(function<void(void)>&& end);
-        virtual ~Marker();
-};
-
-
 //utils class used to identify object type
 template<typename T>
 class VersionError;

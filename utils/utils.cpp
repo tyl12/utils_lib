@@ -30,7 +30,7 @@
 //#include <boost/asio.hpp>
 //#include <boost/bind.hpp>
 //#include <boost/function.hpp>
-
+#include "Marker.h"
 #include "utils.h"
 
 using namespace std;
@@ -65,24 +65,6 @@ void libutils_init(void){
 }
 void libutils_fini(void){
     LOGD("libsutils destructor");
-}
-
-/**************************************************************************/
-Marker::Marker(function<void(void)>&& begin, function<void(void)>&& end):
-    mFunc(move(end))
-{
-    if (gDebugUtils)
-        begin();
-}
-
-Marker::Marker(function<void(void)>&& end):
-    mFunc(move(end))
-{ }
-
-Marker::~Marker(){
-    if (gDebugUtils)
-        if (mFunc)
-            mFunc();
 }
 
 /**************************************************************************/
