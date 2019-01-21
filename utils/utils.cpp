@@ -732,13 +732,22 @@ string format_string(const std::string& format, ...)
 {
     va_list args;
     va_start (args, format);
-    size_t len = std::vsnprintf(NULL, 0, format.c_str(), args);
+    size_t len = std::vsnprintf(NULL, 0, format.c_str(), args); //end with '\0', with string len + 1
     va_end (args);
+#if 1
     std::vector<char> vec(len + 1);
     va_start (args, format);
     std::vsnprintf(&vec[0], len + 1, format.c_str(), args);
     va_end (args);
     return &vec[0];
+#else //reduce a memcpy. but only valid for >c++11, as With C++11, strings are now guaranteed to be contiguous in memory.
+    std::string vec(len+1, '\0');
+    va_start (args, format);
+    std::vsnprintf(&vec[0], len + 1, format.c_str(), args);
+    vec.resize(len);
+    va_end (args);
+    return vec;//RVO with string directly.
+#endif
 }
 
 }
