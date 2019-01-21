@@ -7,7 +7,7 @@ class ScopeGuard
 {
 
     private:
-    bool committed; // not mutable
+    bool dismissed; // not mutable
     Lambda rollbackLambda;
 
     public:
@@ -19,23 +19,23 @@ class ScopeGuard
     // make sure this is not a copy ctor
     template <typename L>
     explicit ScopeGuard(L&& _l):
-        committed(false),
+        dismissed(false),
         rollbackLambda(std::forward<L>(_l)) // avoid copying unless necessary
     {}
 
     // move constructor
     ScopeGuard(ScopeGuard&& that):
-        committed(that.committed),
+        dismissed(that.dismissed),
         rollbackLambda(std::move(that.rollbackLambda)) {
-            that.committed = true;
+            that.dismissed = true;
         }
 
     ~ScopeGuard()
     {
-        if (!committed)
+        if (!dismissed)
             rollbackLambda(); // what if this throws?
     }
-    void commit() { committed = true; } // no need for const
+    void dismiss() { dismissed = true; } // no need for const
 };
 
 template<typename rLambda>
