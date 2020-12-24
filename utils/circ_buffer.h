@@ -4,15 +4,22 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/circular_buffer.hpp>
+#include <boost/noncopyable.hpp>
+#include <boost/utility.hpp>
 
 // Thread safe circular buffer
 template <typename T>
-class circ_buffer : private boost::noncopyable
+//class circ_buffer : private boost::noncopyable
+class circ_buffer
 {
     public:
         typedef boost::mutex::scoped_lock lock;
         circ_buffer() {}
         circ_buffer(int n) {cb.set_capacity(n);}
+        //inherit from noncopyable, or make below 2 functions delete, but only valid for >c++11
+        circ_buffer(const circ_buffer&) = delete;
+        circ_buffer& operator=(const circ_buffer&) = delete;
+
         void send (T imdata) {
             lock lk(monitor);
             cb.push_back(imdata);

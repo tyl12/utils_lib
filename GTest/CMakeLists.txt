@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
+PROJECT(UtilsTest)
 
 set (CMAKE_CXX_STANDARD 11)
 set (SRC_FILES ./Test_utils.cpp)

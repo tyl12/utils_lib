@@ -436,10 +436,12 @@ TEST(Test_perf, Perf) {
 }
 #endif
 
-#if 1
 #include <queue>
 #include <vector>
 #include <iostream>
+#include <list>
+
+#if 1
 #include "circ_buffer.h"
 
 TEST(Test_circ_buffer, CircBuffer){

@@ -8,6 +8,7 @@ make install
 )
 
 (
+#make sure gtest has been installed beforehand.
 set -e
 cd GTest && rm -rf build/ && mkdir build && cd build
 cmake .. -DUTILS_PATH=`pwd`/../../utils/build/install
