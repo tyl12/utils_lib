@@ -60,3 +60,13 @@ link_libraries(pthread utils boost_system  boost_thread)
 
 add_executable(testScopeGuard ${SRC_FILES})
 target_link_libraries(testScopeGuard utils)
+
+#-------------------------------------------------------
+set (SRC_FILES ./Test_Marker.cpp)
+
+include_directories(${UTILS_PATH})
+link_directories(${UTILS_PATH})
+link_libraries(pthread utils boost_system  boost_thread)
+
+add_executable(testMarker ${SRC_FILES})
+target_link_libraries(testMarker utils)
