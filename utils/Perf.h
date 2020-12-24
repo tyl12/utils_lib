@@ -20,7 +20,7 @@ class Perf
 
         Perf(string tag);
         virtual ~Perf();
-        void reset();
+        void restart();
         void done();
 };
 }

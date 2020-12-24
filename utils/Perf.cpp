@@ -31,7 +31,7 @@ Perf::~Perf()
     }
 }
 
-void Perf::reset()
+void Perf::restart()
 {
     start = get_time_ms();
     over = false;

@@ -18,13 +18,11 @@
 #include <iterator>
 #include <dirent.h>
 
-
 //for format_string
 #include <iostream>
 #include <vector>
 #include <cstdarg>
 #include <cstring>
-
 
 //#include <boost/ref.hpp>
 //#include <boost/asio.hpp>
@@ -32,6 +30,9 @@
 //#include <boost/function.hpp>
 #include "Marker.h"
 #include "utils.h"
+
+//static bool gDebugUtils=false;
+static bool gDebugUtils=true;
 
 using namespace std;
 
@@ -468,6 +469,15 @@ bool endsWithIgnoreCase(const string& s, const string& sub){
     return (distance(s.begin() +(s.size() - sub.size()), it) == 0);
 }
 
+bool toUpperCaseInplace(string& s){
+    std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+    return true;
+}
+bool toLowerCaseInplace(string& s){
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    return true;
+}
+
 vector<string> get_file_list(const char* filedir, const char* str_start=NULL, const char* str_end=NULL)
 {
     vector<string> result;
@@ -695,7 +705,7 @@ int exec_shell_script(const char* script_dir, const char* script_file){
     return 0;
 }
 
-int wait_system_boot_complete(const vector<string>& mountlist_input){
+int wait_android_boot_complete(const vector<string>& mountlist_input){
     auto mountlist = mountlist_input;
     if (mountlist.size() == 0){
         mountlist = vector<string>({

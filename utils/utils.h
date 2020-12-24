@@ -31,9 +31,6 @@ using namespace std;
 
 namespace utils{
 
-//static bool gDebugUtils=false;
-static bool gDebugUtils=true;
-
 #define LOGD(fmt, ...)  do{ printf("%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
 #define LOGE(fmt, ...)  do{ printf("%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
 
@@ -66,12 +63,15 @@ bool endsWith(const string& s, const string& sub);
 
 bool startsWithIgnoreCase(const string& s, const string& sub);
 bool endsWithIgnoreCase(const string& s, const string& sub);
+
+bool toUpperCaseInplace(string& s);
+bool toLowerCaseInplace(string& s);
+
 /*
  * 删除字符串头尾的空格字符,
  * input: inplace 操作，会改变输入字符串,
  * output: 输入字符串经过trim操作之后的结果字符串的引用
  */
-
 
 string& ltrim_inplace(string &s);
 string& rtrim_inplace(string &s);
@@ -106,6 +106,8 @@ int restore_stdout();
 
 int exec_popen(const char* cmd);
 int exec_shell_script(const char* script_dir, const char* script_file);
+
+int wait_android_boot_complete(const vector<string>& mountlist_input);
 
 string format_string(const std::string& format, ...);
 
