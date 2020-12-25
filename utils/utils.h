@@ -92,17 +92,11 @@ string merge_intvector_to_string_with_traits(vector<int> data);
 int launch_cmd(const char* cmd, vector<string>& output);
 vector<string> get_current_mac_addrs();
 
-int check_passwd(const char* name = NULL);
-string getLoginUser();
-
 string get_ts(void);
 
 int64_t get_time_ms();
 string get_date_str_sec();
 std::string get_date_str_sec_from_time(time_t t);
-
-int redirect_stdout_stderr(const char* fname);
-int restore_stdout();
 
 int exec_popen(const char* cmd);
 int exec_shell_script(const char* script_dir, const char* script_file);
