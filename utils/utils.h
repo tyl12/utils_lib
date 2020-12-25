@@ -29,16 +29,16 @@
 
 using namespace std;
 
-namespace utils{
-
-#define LOGD(fmt, ...)  do{ printf("%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
-#define LOGE(fmt, ...)  do{ printf("%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
+#define LOGD(fmt, ...)  do{ printf("%s DBG: %s:%d: " fmt "\n", utils::get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
+#define LOGE(fmt, ...)  do{ printf("%s ERR: %s:%d: " fmt "\n", utils::get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__, ##__VA_ARGS__); } while(0)
 
 //#define LOGD(fmt, ...)  do{ printf("DEBUG: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
 //#define LOGE(fmt, ...)  do{ printf("ERROR: %s:%d: "fmt"\n", __FUNCTION__,__LINE__, __VA_ARGS__); } while(0)
 
-#define LOGD2(fmt, args...) fprintf (stdout, "%s DBG: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__,args)
-#define LOGE2(fmt, args...) fprintf (stderr, "%s ERR: %s:%d: " fmt "\n", get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__,args)
+#define LOGD2(fmt, args...) fprintf (stdout, "%s DBG: %s:%d: " fmt "\n", utils::get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__,args)
+#define LOGE2(fmt, args...) fprintf (stderr, "%s ERR: %s:%d: " fmt "\n", utils::get_ts().c_str(), __PRETTY_FUNCTION__,__LINE__,args)
+
+namespace utils{
 
 template<typename ... Args>
 string string_format( const std::string& format, Args ... args )
